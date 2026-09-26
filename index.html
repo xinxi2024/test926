@@ -28,6 +28,35 @@
     text-align: center;
   }
   .brand-text .cool-title { font-size: 20px; letter-spacing: 2px; }
+
+  /* 身份选择 */
+  .role-select {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .role-opt {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.7);
+    border: 1.5px solid #e5e7eb;
+    font-size: 13px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .role-opt.active {
+    background: linear-gradient(135deg, #3aa0ff, #1e73e8);
+    color: #fff;
+    border-color: transparent;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(30,115,232,.3);
+  }
   body {
     display: flex;
     align-items: center;
@@ -160,6 +189,7 @@
     flex-shrink: 0;
   }
   .logo img { width: 100%; height: 100%; object-fit: cover; }
+  .brand-text { text-align: center; }
   .brand-text h1 { font-size: 16px; font-weight: 700; line-height: 1.2; }
   .brand-text p { font-size: 11px; color: #6b7280; margin-top: 2px; }
   .bell {
@@ -640,6 +670,106 @@
   .post-action svg { width: 17px; height: 17px; }
   .post-action.share { margin-left: auto; }
 
+  /* ===== 审核管理页 ===== */
+  .admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px 6px;
+  }
+  .admin-title { font-size: 18px; font-weight: 700; color: #1f2937; }
+  .admin-stats {
+    display: flex;
+    gap: 10px;
+    padding: 10px 16px;
+  }
+  .admin-stat-card {
+    flex: 1;
+    border-radius: 14px;
+    padding: 12px;
+    text-align: center;
+    color: #fff;
+  }
+  .admin-stat-card .num { font-size: 20px; font-weight: 800; }
+  .admin-stat-card .lbl { font-size: 11px; opacity: .9; margin-top: 2px; }
+  .stat-pending { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+  .stat-online { background: linear-gradient(135deg, #34d399, #10b981); }
+  .stat-rejected { background: linear-gradient(135deg, #f87171, #ef4444); }
+  .admin-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 4px 16px 10px;
+  }
+  .adm-tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    border-radius: 10px;
+    background: #f3f4f6;
+    font-size: 13px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .adm-tab.active {
+    background: #1e73e8;
+    color: #fff;
+    font-weight: 600;
+  }
+  .admin-list {
+    padding: 0 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .review-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.04);
+  }
+  .review-top {
+    display: flex;
+    gap: 12px;
+  }
+  .review-img {
+    width: 76px; height: 76px;
+    border-radius: 10px;
+    background: #f3f4f6 center/cover;
+    flex-shrink: 0;
+  }
+  .review-info { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .review-title { font-size: 14px; font-weight: 600; line-height: 1.3; }
+  .review-seller { font-size: 12px; color: #9ca3af; }
+  .review-price { color: #ff4d4f; font-size: 16px; font-weight: 700; }
+  .review-price small { font-size: 11px; }
+  .review-reason {
+    font-size: 12px;
+    color: #ef4444;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed #f3f4f6;
+  }
+  .review-btns {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .review-btn {
+    flex: 1;
+    padding: 9px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity .2s;
+  }
+  .review-btn:active { opacity: .8; }
+  .review-btn.approve { background: linear-gradient(135deg, #34d399, #10b981); color: #fff; }
+  .review-btn.reject { background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; }
+  .review-btn.disabled { background: #f3f4f6; color: #9ca3af; border: none; }
+
   /* ===== 消息页 ===== */
   .msg-header {
     display: flex;
@@ -870,6 +1000,20 @@
     padding: 2px 8px;
     border-radius: 6px;
   }
+  .id-tag.admin {
+    color: #9333ea;
+    background: #f3e8ff;
+    font-weight: 600;
+  }
+  .switch-role-btn {
+    font-size: 10px;
+    color: #1e73e8;
+    background: #eaf4ff;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-left: auto;
+    cursor: pointer;
+  }
   .profile-bio {
     font-size: 12px;
     color: #4b5563;
@@ -895,6 +1039,33 @@
     margin-bottom: 10px;
     padding: 0 2px;
   }
+  /* 商品网格标题 */
+  .grid-section-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 4px 2px 10px;
+  }
+  .gst-text {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+    position: relative;
+    padding-left: 10px;
+  }
+  .gst-text::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 16px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #3ab0ff, #1e73e8);
+  }
+  .gst-count { font-size: 12px; color: #9ca3af; }
+  .gst-count b { color: #1e73e8; font-size: 14px; }
   .service-list {
     background: #fff;
     border-radius: 14px;
@@ -923,6 +1094,7 @@
   .s-orange { background: #fff7ed; color: #f59e0b; }
   .s-green { background: #ecfdf5; color: #10b981; }
   .s-gray { background: #f3f4f6; color: #6b7280; }
+  .s-purple { background: #f3e8ff; color: #9333ea; }
   .service-label { flex: 1; font-size: 14px; color: #1f2937; }
   .service-count { font-size: 12px; color: #9ca3af; }
   .menu-arrow { color: #d1d5db; font-size: 14px; margin-left: 2px; }
@@ -1352,6 +1524,81 @@
   }
   .order-confirm-btn:active { transform: scale(.98); }
 
+  /* ===== 通知面板 ===== */
+  .notif-panel-mask {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.4);
+    z-index: 150;
+    display: none;
+    justify-content: flex-end;
+    align-items: flex-start;
+  }
+  .notif-panel-mask.show { display: flex; }
+  .notif-panel {
+    width: 86%;
+    max-width: 320px;
+    margin: 70px 12px 0 0;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,.15);
+    animation: notifSlide .25s ease;
+  }
+  @keyframes notifSlide {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .notif-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .notif-panel-title { font-size: 15px; font-weight: 700; }
+  .notif-clear { font-size: 12px; color: #1e73e8; cursor: pointer; }
+  .notif-panel-body {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .notif-panel-body::-webkit-scrollbar { display: none; }
+  .notif-item {
+    display: flex;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f9fafb;
+    cursor: pointer;
+  }
+  .notif-item:active { background: #f9fafb; }
+  .notif-item.unread { background: #f0f7ff; }
+  .notif-ic {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .notif-ic.approve { background: #dcfce7; }
+  .notif-ic.reject { background: #fee2e2; }
+  .notif-ic.order { background: #dbeafe; }
+  .notif-ic.system { background: #f3f4f6; }
+  .notif-content { flex: 1; font-size: 12px; color: #374151; line-height: 1.5; }
+  .notif-time { font-size: 10px; color: #9ca3af; margin-top: 3px; }
+  .notif-dot {
+    width: 6px; height: 6px;
+    background: #1e73e8;
+    border-radius: 50%;
+    flex-shrink: 0;
+    align-self: center;
+  }
+  .notif-empty {
+    padding: 40px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 13px;
+  }
+
   /* ===== Toast ===== */
   .toast {
     position: absolute;
@@ -1662,6 +1909,16 @@
         <div class="login-logo"><img src="logo.png" alt="上商淘" /></div>
         <div class="login-title cool-title">上商淘</div>
         <div class="login-sub">上海商学院专属二手交易平台</div>
+        <div class="role-select">
+          <div class="role-opt active" id="roleUser" onclick="selectRole('user')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            普通用户
+          </div>
+          <div class="role-opt" id="roleAdmin" onclick="selectRole('admin')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            审核员
+          </div>
+        </div>
         <div class="login-form">
           <div class="login-field">
             <span class="prefix">+86</span>
@@ -1717,7 +1974,7 @@
                 <p>上海商学院二手交易平台</p>
               </div>
             </div>
-            <div class="bell" onclick="showToast('暂无新通知')">
+            <div class="bell" onclick="openNotifications()">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
               <span class="badge">3</span>
             </div>
@@ -1793,6 +2050,10 @@
         </div>
 
         <!-- 筛选 Tab -->
+        <div class="grid-section-title">
+          <span class="gst-text">校园好物</span>
+          <span class="gst-count"><b id="productCount">0</b> 件</span>
+        </div>
         <div class="filter-tabs" id="filterTabs">
           <div class="tab active" data-sort="all" onclick="changeSort('all')">全部</div>
           <div class="tab" data-sort="new" onclick="changeSort('new')">最新发布</div>
@@ -1829,6 +2090,24 @@
           <span class="d-tab" onclick="selDiscTab(this,'price')">价格最低</span>
         </div>
         <div class="post-feed" id="postFeed"></div>
+      </div>
+
+      <!-- 审核管理页 -->
+      <div class="page" id="page-admin">
+        <div class="admin-header">
+          <div class="back-btn" onclick="switchPage('home')" style="color:#1f2937;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </div>
+          <div class="admin-title">商品审核中心</div>
+          <div style="width:28px;"></div>
+        </div>
+        <div class="admin-stats" id="adminStats"></div>
+        <div class="admin-tabs">
+          <span class="adm-tab active" onclick="selAdmTab(this,'pending')">待审核</span>
+          <span class="adm-tab" onclick="selAdmTab(this,'online')">已通过</span>
+          <span class="adm-tab" onclick="selAdmTab(this,'rejected')">已驳回</span>
+        </div>
+        <div class="admin-list" id="adminList"></div>
       </div>
 
       <!-- 发布页 -->
@@ -1961,7 +2240,8 @@
               <div class="profile-school">上海商学院 · 商务经济_</div>
               <div class="profile-tags">
                 <span class="credit-tag">★ 信用极好</span>
-                <span class="id-tag">ID: 20210815</span>
+                <span class="id-tag" id="roleBadge">普通用户</span>
+                <span class="switch-role-btn" onclick="quickSwitchRole()">⇄ 切换身份</span>
               </div>
             </div>
           </div>
@@ -1977,6 +2257,14 @@
         <div class="profile-section">
           <div class="section-title">我的服务</div>
           <div class="service-list">
+            <div class="service-item" id="adminEntry" onclick="goAdmin()" style="display:none;">
+              <div class="service-icon s-purple">
+                <svg class="ic" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+              </div>
+              <span class="service-label">审核中心</span>
+              <span class="service-count" id="adminPendingCount" style="color:#f59e0b;"></span>
+              <span class="menu-arrow">›</span>
+            </div>
             <div class="service-item" onclick="showToast('我的发布')">
               <div class="service-icon s-blue">
                 <svg class="ic" viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
@@ -2234,6 +2522,17 @@
       </div>
     </div>
 
+    <!-- 通知面板 -->
+    <div class="notif-panel-mask" id="notifPanel" onclick="closeNotifications(event)">
+      <div class="notif-panel" onclick="event.stopPropagation()">
+        <div class="notif-panel-header">
+          <span class="notif-panel-title">通知中心</span>
+          <span class="notif-clear" onclick="clearNotifications()">全部已读</span>
+        </div>
+        <div class="notif-panel-body" id="notifPanelBody"></div>
+      </div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
@@ -2278,18 +2577,29 @@
 
   // ===== 渲染商品 =====
   function renderProducts() {
-    // 只展示已上架的商品（无 status 字段的默认视为已上架）
-    let list = products.filter(p => p.status !== 'pending' && p.status !== 'sold');
+    // 只展示已上架商品；无 status 字段的初始商品默认视为已上架
+    let list = products.filter(p =>
+      p.status !== 'pending' && p.status !== 'sold' && p.status !== 'rejected'
+    );
     if (currentCat) list = list.filter(p => p.cat === currentCat);
-    if (currentSort === 'price') list.sort((a,b) => a.price - b.price);
-    if (currentSort === 'new') list.reverse();
-    if (currentSort === 'near') list.sort((a,b) => a.location.localeCompare(b.location));
     const kw = document.getElementById('searchInput').value.trim();
-    if (kw) list = list.filter(p => p.title.includes(kw));
+    if (kw) list = list.filter(p => p.title.includes(kw) || (p.desc && p.desc.includes(kw)));
+
+    // 排序（使用 slice 避免修改原数组）
+    if (currentSort === 'price') {
+      list = list.slice().sort((a,b) => a.price - b.price);
+    } else if (currentSort === 'new') {
+      list = list.slice().sort((a,b) => b.id - a.id);
+    } else if (currentSort === 'near') {
+      list = list.slice().sort((a,b) => a.location.localeCompare(b.location));
+    }
 
     const grid = document.getElementById('productGrid');
+    updateProductCount(list.length);
     if (list.length === 0) {
-      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#9ca3af;padding:40px 0;font-size:13px;">暂无商品</div>`;
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#9ca3af;padding:40px 0;font-size:13px;">
+        🔍 暂无符合条件的商品<br><span style="font-size:11px;">换个筛选条件试试吧</span>
+      </div>`;
       return;
     }
     grid.innerHTML = list.map(p => `
@@ -2308,6 +2618,12 @@
         </div>
       </div>
     `).join('');
+  }
+
+  // 更新商品数量
+  function updateProductCount(n) {
+    const el = document.getElementById('productCount');
+    if (el) el.textContent = n;
   }
 
   // ===== 收藏切换 =====
@@ -2395,12 +2711,186 @@
     p.status = 'sold';
     closeOrder();
     closeDetail();
-    showToast('✅ 下单成功！已通知卖家，等待发货');
+    addNotification(`您购买的商品「${p.title}」下单成功，请等待卖家确认发货`, 'order');
+    showToast('✅ 下单成功！已通知卖家');
     renderProducts();
     // 模拟卖家回复
     setTimeout(() => {
       showToast('💬 卖家已回复，请在消息中查看');
     }, 1200);
+  }
+
+  // ===== 审核中心 =====
+  let admCurrentTab = 'pending';
+
+  function renderAdmin() {
+    const pendingCount = products.filter(p => p.status === 'pending').length;
+    const onlineCount = products.filter(p => p.status === 'online' || (!p.status && p.status !== 'sold')).length;
+    const rejectedCount = products.filter(p => p.status === 'rejected').length;
+
+    // 统计卡片
+    document.getElementById('adminStats').innerHTML = `
+      <div class="admin-stat-card stat-pending"><div class="num">${pendingCount}</div><div class="lbl">待审核</div></div>
+      <div class="admin-stat-card stat-online"><div class="num">${onlineCount}</div><div class="lbl">已通过</div></div>
+      <div class="admin-stat-card stat-rejected"><div class="num">${rejectedCount}</div><div class="lbl">已驳回</div></div>
+    `;
+
+    renderAdminList();
+  }
+
+  function renderAdminList() {
+    let list;
+    if (admCurrentTab === 'pending') {
+      list = products.filter(p => p.status === 'pending');
+    } else if (admCurrentTab === 'online') {
+      list = products.filter(p => p.status === 'online' || (!p.status && p.status !== 'sold' && p.status !== 'rejected'));
+    } else {
+      list = products.filter(p => p.status === 'rejected');
+    }
+
+    const container = document.getElementById('adminList');
+    if (list.length === 0) {
+      const msg = admCurrentTab === 'pending' ? '暂无待审核商品 🎉' : admCurrentTab === 'online' ? '暂无已通过商品' : '暂无已驳回商品';
+      container.innerHTML = `<div style="text-align:center;color:#9ca3af;padding:40px 0;font-size:13px;">${msg}</div>`;
+      return;
+    }
+
+    container.innerHTML = list.map(p => {
+      const time = p.submitTime || '已有商品';
+      let btnsHtml = '';
+      if (p.status === 'pending') {
+        btnsHtml = `
+          <div class="review-btns">
+            <button class="review-btn approve" onclick="approveProduct(${p.id})">✓ 审核通过</button>
+            <button class="review-btn reject" onclick="rejectProduct(${p.id})">✕ 驳回</button>
+          </div>`;
+      } else if (p.status === 'rejected') {
+        btnsHtml = `<div class="review-reason">驳回原因：${p.rejectReason || '不符合平台规范'}</div>`;
+      } else {
+        btnsHtml = `<div style="margin-top:8px;font-size:12px;color:#10b981;">✓ 已上架 · ${time}</div>`;
+      }
+      return `
+        <div class="review-card">
+          <div class="review-top">
+            <div class="review-img" style="background-image:url('${p.img}')"></div>
+            <div class="review-info">
+              <div class="review-title">${p.title}</div>
+              <div class="review-seller">发布者：${p.seller} · ${time}</div>
+              <div class="review-price"><small>¥</small>${p.price}</div>
+            </div>
+          </div>
+          ${btnsHtml}
+        </div>`;
+    }).join('');
+  }
+
+  function selAdmTab(el, tab) {
+    document.querySelectorAll('.adm-tab').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    admCurrentTab = tab;
+    renderAdminList();
+  }
+
+  function approveProduct(id) {
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+
+    // ===== 后端接口预留：POST /api/product/approve =====
+    // fetch('/api/product/approve', {
+    //   method:'POST',
+    //   headers:{'Content-Type':'application/json'},
+    //   body: JSON.stringify({ productId: id, approved: true })
+    // }).then(r=>r.json());
+
+    p.status = 'online';
+    p.isNew = true;
+    p.auditTime = new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+    addNotification(`您的商品「${p.title}」已通过审核，已成功上架！`, 'approve');
+    renderAdmin();
+    showToast('✅ 已通过审核并上架');
+  }
+
+  function rejectProduct(id) {
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+
+    // ===== 后端接口预留：POST /api/product/reject =====
+    // fetch('/api/product/approve', {
+    //   method:'POST',
+    //   headers:{'Content-Type':'application/json'},
+    //   body: JSON.stringify({ productId: id, approved: false, reason: '商品信息不完整' })
+    // }).then(r=>r.json());
+
+    p.status = 'rejected';
+    p.rejectReason = '商品图片不清晰，信息描述不完整，请修改后重新发布';
+    p.auditTime = new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+    addNotification(`您的商品「${p.title}」被驳回：${p.rejectReason}`, 'reject');
+    renderAdmin();
+    showToast('已驳回并通知发布者');
+  }
+
+  // ===== 通知系统 =====
+  let notifications = [];
+
+  function addNotification(content, type) {
+    notifications.unshift({
+      id: Date.now(),
+      content: content,
+      type: type,   // approve / reject / order / system
+      time: new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}),
+      read: false
+    });
+    updateNotificationBadge();
+  }
+
+  function updateNotificationBadge() {
+    const unread = notifications.filter(n => !n.read).length;
+    const bellBadge = document.querySelector('.bell .badge');
+    if (bellBadge) {
+      if (unread > 0) {
+        bellBadge.textContent = unread;
+        bellBadge.style.display = 'flex';
+      } else {
+        bellBadge.style.display = 'none';
+      }
+    }
+  }
+
+  function openNotifications() {
+    renderNotifPanel();
+    document.getElementById('notifPanel').classList.add('show');
+  }
+  function closeNotifications(e) {
+    if (e && e.target !== e.currentTarget) return;
+    document.getElementById('notifPanel').classList.remove('show');
+  }
+  function renderNotifPanel() {
+    const body = document.getElementById('notifPanelBody');
+    if (notifications.length === 0) {
+      body.innerHTML = `<div class="notif-empty">🔔 暂无通知</div>`;
+      return;
+    }
+    body.innerHTML = notifications.map(n => {
+      const icon = n.type === 'approve' ? '✅' : n.type === 'reject' ? '❌' : n.type === 'order' ? '🛒' : '🔔';
+      return `
+        <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markNotifRead(${n.id})">
+          <div class="notif-ic ${n.type}">${icon}</div>
+          <div class="notif-content">
+            ${n.content}
+            <div class="notif-time">${n.time}</div>
+          </div>
+          ${n.read ? '' : '<div class="notif-dot"></div>'}
+        </div>`;
+    }).join('');
+  }
+  function markNotifRead(id) {
+    const n = notifications.find(x => x.id === id);
+    if (n) { n.read = true; updateNotificationBadge(); renderNotifPanel(); }
+  }
+  function clearNotifications() {
+    notifications.forEach(n => n.read = true);
+    updateNotificationBadge();
+    renderNotifPanel();
   }
 
   // ===== 发现页 =====
@@ -2629,7 +3119,7 @@
   function submitPublish() {
     const title = document.getElementById('pTitle').value.trim();
     const price = document.getElementById('pPrice').value;
-    if (uploadImgs.length === 0) return showToast('请至少上传1张商品图片');
+    if (uploadImgs.length === 0) return showToast('请至少上传1张图片');
     if (!title) return showToast('请填写商品名称');
     if (!price) return showToast('请填写商品价格');
 
@@ -2637,10 +3127,9 @@
     // const formData = new FormData();
     // formData.append('title', title);
     // formData.append('price', price);
-    // formData.append('desc', desc);
-    // uploadImgs.forEach((img,i) => formData.append('images', img));
+    // uploadImgs.forEach(img => formData.append('images', img));
     // fetch('/api/product/publish', { method:'POST', body: formData })
-    //   .then(r => r.json()).then(data => { /* 商品进入审核 */ });
+    //   .then(r => r.json()).then(data => { /* 等待审核员审核 */ });
 
     const catEl = document.querySelector('.chip.active');
     const newProduct = {
@@ -2649,15 +3138,17 @@
       title: title,
       price: Number(price),
       img: uploadImgs[0],
-      seller: '林晓晴',
+      seller: currentRole === 'admin' ? '审核员' : '林晓晴',
       location: '奉贤校区',
       views: 0,
       desc: document.getElementById('pDesc').value || '卖家很懒，什么都没留下～',
-      status: 'pending',   // pending=审核中, online=已上架, sold=已售出
-      isNew: true
+      status: 'pending',   // pending=待审核, online=已上架, rejected=已驳回, sold=已售出
+      isNew: false,
+      submitTime: new Date().toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'}),
+      rejectReason: ''
     };
     products.push(newProduct);
-    showToast('发布成功，商品审核中…');
+    showToast('发布成功，等待审核员审核…');
     setTimeout(() => {
       uploadImgs = [];
       renderUploadGrid();
@@ -2667,19 +3158,33 @@
       document.getElementById('pContact').value = '';
       document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
       updateNameCounter();
-      switchPage('home');
+      // 审核员发布后直接进入审核中心；普通用户回首页
+      if (currentRole === 'admin') {
+        renderAdmin();
+        switchPage('admin');
+      } else {
+        switchPage('home');
+      }
     }, 900);
-
-    // 模拟后端审核：1.5s 后自动通过
-    setTimeout(() => {
-      newProduct.status = 'online';
-      renderProducts();
-      showToast('🎉 您的商品「' + title + '」已通过审核，已上架！');
-    }, 1500);
   }
 
-  // ===== 登录 =====
+  // ===== 登录 / 角色 =====
+  let currentRole = 'user';   // user=普通用户, admin=审核员
   let codeTimer = null;
+
+  function selectRole(role) {
+    currentRole = role;
+    document.getElementById('roleUser').classList.toggle('active', role === 'user');
+    document.getElementById('roleAdmin').classList.toggle('active', role === 'admin');
+    // 切换手机号提示（演示）
+    const phoneInput = document.getElementById('loginPhone');
+    if (role === 'admin') {
+      phoneInput.value = '13900139000';
+    } else {
+      phoneInput.value = '13800138000';
+    }
+  }
+
   function sendCode() {
     const phone = document.getElementById('loginPhone').value.trim();
     if (!/^1\d{10}$/.test(phone)) return showToast('请输入正确的手机号');
@@ -2706,14 +3211,49 @@
     if (!/^1\d{10}$/.test(phone)) return showToast('请输入正确的手机号');
     if (code.length < 4) return showToast('请输入验证码');
     if (!agree) return showToast('请先同意用户协议');
-    showToast('登录成功，欢迎回来！');
+    const roleText = currentRole === 'admin' ? '审核员' : '普通用户';
+    showToast('登录成功（' + roleText + '）');
     setTimeout(() => {
       document.getElementById('loginMask').classList.add('hide');
+      // 审核员进入审核中心，普通用户进入首页
+      if (currentRole === 'admin') {
+        renderAdmin();
+        switchPage('admin');
+      } else {
+        renderProducts();
+        switchPage('home');
+      }
     }, 600);
   }
   function logout() {
     document.getElementById('loginMask').classList.remove('hide');
     showToast('已退出登录');
+  }
+  // 快速切换身份（演示用）
+  function quickSwitchRole() {
+    selectRole(currentRole === 'admin' ? 'user' : 'admin');
+    showToast('已切换为：' + (currentRole === 'admin' ? '审核员' : '普通用户'));
+    setTimeout(() => {
+      if (currentRole === 'admin') { renderAdmin(); switchPage('admin'); }
+      else { renderProducts(); switchPage('home'); }
+    }, 500);
+  }
+  function goAdmin() {
+    renderAdmin();
+    switchPage('admin');
+  }
+  // 根据角色更新「我的」页面
+  function refreshProfileRole() {
+    const entry = document.getElementById('adminEntry');
+    if (entry) entry.style.display = currentRole === 'admin' ? 'flex' : 'none';
+    const pending = products.filter(p => p.status === 'pending').length;
+    const countEl = document.getElementById('adminPendingCount');
+    if (countEl) countEl.textContent = pending > 0 ? pending + '件待审' : '';
+    const badge = document.getElementById('roleBadge');
+    if (badge) {
+      badge.textContent = currentRole === 'admin' ? '🛡 审核员' : '普通用户';
+      badge.classList.toggle('admin', currentRole === 'admin');
+    }
   }
 
   // ===== 页面切换 =====
@@ -2732,6 +3272,7 @@
     }
     const pageEl = document.getElementById('page-' + name);
     pageEl.scrollTop = 0;
+    if (name === 'account') refreshProfileRole();
   }
 
   // ===== Toast =====
