@@ -61,6 +61,12 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+// 独立图片上传接口：图片持久保存到 server/uploads/，返回可长期引用的 URL
+app.post('/api/upload', upload.single('file'), (req, res) => {
+  if (!req.file) return res.status(400).json({ code: 1, msg: '未收到文件' });
+  res.json({ code: 0, msg: '上传成功', url: '/uploads/' + req.file.filename });
+});
+
 // ============================================================
 // 认证模块
 // ============================================================

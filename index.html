@@ -1990,6 +1990,27 @@
   .adm-hero-btn:active { transform: scale(.9); background: rgba(255,255,255,.3); }
   .adm-hero-btn .badge { top: -3px; right: -3px; }
 
+  /* ===== 注册 ===== */
+  .register-entry {
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    margin-top: 12px; font-size: 12.5px; color: #1e73e8; font-weight: 500;
+    cursor: pointer; padding: 4px 0;
+  }
+  .register-entry:active { opacity: .6; }
+  .reg-form { display: flex; flex-direction: column; gap: 10px; padding-bottom: 6px; }
+  .reg-form .form-input {
+    width: 100%; box-sizing: border-box; background: #f3f4f6; border: none;
+    border-radius: 12px; padding: 13px 14px; font-size: 14px; color: #111827;
+  }
+  .reg-form .form-input:focus { outline: 2px solid #1e73e8; background: #fff; }
+  .reg-code-row { display: flex; gap: 8px; align-items: center; }
+  .reg-code-row .form-input { flex: 1; }
+  .reg-code-btn {
+    flex-shrink: 0; border: none; background: #e8f0fe; color: #1e73e8;
+    font-size: 13px; font-weight: 600; border-radius: 12px; padding: 12px 14px; cursor: pointer;
+  }
+  .reg-code-btn:disabled { color: #9ca3af; background: #f3f4f6; }
+
   /* ===== 登录页 ===== */
   .login-mask {
     position: absolute;
@@ -2302,6 +2323,10 @@
             <span class="code-btn" id="codeBtn" onclick="sendCode()">获取验证码</span>
           </div>
           <button class="login-btn" onclick="doLogin()">登 录 / 注 册</button>
+          <div class="register-entry" onclick="openRegister()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            新用户注册（自定义昵称）
+          </div>
           <div class="login-agree">
             <input type="checkbox" id="agreeCheck" checked />
             <span>我已阅读并同意 <a href="javascript:showToast('用户协议')">《用户协议》</a> 和 <a href="javascript:showToast('隐私政策')">《隐私政策》</a></span>
@@ -3225,7 +3250,7 @@
     viewedProducts.unshift({ id, time: nowStr() });
     refreshProfileStats();
     document.getElementById('detailModal').classList.add('show');
-    window.__histPushOv();
+    histPushOv();
   }
   // 详情页收藏按钮
   function detailToggleFav() {
@@ -3236,10 +3261,9 @@
     favBtn.textContent = !isFav ? '♥ 已收藏' : '♡ 收藏';
     favBtn.classList.toggle('is-faved', !isFav);
   }
-  function closeDetail(e, fromPop) {
-    if (e && e.target && e.target !== e.currentTarget && fromPop !== true) return;
+  function closeDetail(e) {
+    if (e && e.target && e.target !== e.currentTarget) return;
     document.getElementById('detailModal').classList.remove('show');
-    if (fromPop !== true) window.__histSyncClose();
   }
 
   // ===== 订单流程 =====
@@ -3450,12 +3474,11 @@
   function openNotifications() {
     renderNotifPanel();
     document.getElementById('notifPanel').classList.add('show');
-    window.__histPushOv();
+    histPushOv();
   }
-  function closeNotifications(e, fromPop) {
+  function closeNotifications(e) {
     if (e && e.target && e.target !== e.currentTarget) return;
     document.getElementById('notifPanel').classList.remove('show');
-    if (fromPop !== true) window.__histSyncClose();
   }
   function renderNotifPanel() {
     const body = document.getElementById('notifPanelBody');
@@ -3798,6 +3821,67 @@
       }
     }, 1000);
   }
+  // ===== 注册新账号 =====
+  function getRegisteredUsers() {
+    try { return JSON.parse(localStorage.getItem('shangtao_users') || '{}'); } catch (e) { return {}; }
+  }
+  function openRegister() {
+    openSheet(`
+      <div class="sheet-title">注册新账号</div>
+      <div class="reg-form">
+        <input id="regName" class="form-input" placeholder="取个昵称（2-12个字）" maxlength="12" />
+        <input id="regPhone" class="form-input" type="tel" placeholder="手机号" maxlength="11" />
+        <div class="reg-code-row">
+          <input id="regCode" class="form-input" type="text" placeholder="验证码" maxlength="4" />
+          <button class="reg-code-btn" onclick="sendRegCode(this)">获取验证码</button>
+        </div>
+        <div style="font-size:11px;color:#9ca3af;">演示环境验证码固定为 1234</div>
+        <button class="login-btn" style="width:100%;margin-top:4px;" onclick="doRegister()">注 册</button>
+        <div style="font-size:11px;color:#9ca3af;text-align:center;padding-bottom:4px;">注册即代表同意《用户协议》与《隐私政策》</div>
+      </div>
+    `);
+  }
+  function sendRegCode(btn) {
+    const phone = document.getElementById('regPhone').value.trim();
+    if (!/^1\d{10}$/.test(phone)) return showToast('请输入正确的手机号');
+    btn.disabled = true;
+    let n = 30;
+    btn.textContent = n + 's';
+    const t = setInterval(() => {
+      n--;
+      if (n <= 0) { clearInterval(t); btn.disabled = false; btn.textContent = '重新获取'; }
+      else btn.textContent = n + 's';
+    }, 1000);
+    showToast('验证码已发送（演示：1234）');
+  }
+  function doRegister() {
+    const name = document.getElementById('regName').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const code = document.getElementById('regCode').value.trim();
+    if (name.length < 2) return showToast('昵称至少2个字');
+    if (!/^1\d{10}$/.test(phone)) return showToast('请输入正确的手机号');
+    if (code !== '1234') return showToast('验证码错误（演示：1234）');
+    const users = getRegisteredUsers();
+    if (users[phone]) return showToast('该手机号已注册，直接登录即可');
+    users[phone] = { name: name, regTime: nowStr() };
+    try { localStorage.setItem('shangtao_users', JSON.stringify(users)); } catch (e) {}
+    // 应用昵称并自动登录
+    profile.name = name;
+    profile.bio = '上商淘新同学，欢迎来淘好物～';
+    closeSheet();
+    document.getElementById('loginPhone').value = phone;
+    currentRole = 'user';
+    applyTheme();
+    selectRole('user');
+    document.getElementById('loginMask').classList.add('hide');
+    pageHistory = [];
+    renderProducts();
+    switchPage('home');
+    refreshProfileRole();
+    persist();
+    showToast('🎉 注册成功，欢迎加入上商淘！');
+  }
+
   function doLogin() {
     const phone = document.getElementById('loginPhone').value.trim();
     const code = document.getElementById('loginCode').value.trim();
@@ -3805,6 +3889,11 @@
     if (!/^1\d{10}$/.test(phone)) return showToast('请输入正确的手机号');
     if (code.length < 4) return showToast('请输入验证码');
     if (!agree) return showToast('请先同意用户协议');
+    // 已注册用户登录时恢复其昵称
+    const regUsers = getRegisteredUsers();
+    if (currentRole === 'user' && regUsers[phone]) {
+      profile.name = regUsers[phone].name;
+    }
     const roleText = currentRole === 'admin' ? '审核员' : '普通用户';
     showToast('登录成功（' + roleText + '）');
     setTimeout(() => {
@@ -3958,26 +4047,19 @@
       switchPage(currentRole === 'admin' ? 'adminhome' : 'home', true);
     }
   }
-  // 手机/浏览器物理返回键：逐层关闭浮层（子页面 → 弹层 → 大图 → 详情）
-  (function () {
-    let histLock = false;
-    function overlayOpen(id) { return document.getElementById(id).classList.contains('show'); }
-    window.addEventListener('popstate', function () {
-      if (histLock) { histLock = false; return; }
-      if (overlayOpen('detailModal')) return closeDetail(true);
-      if (overlayOpen('imgViewer')) return closeImgViewer(true);
-      if (overlayOpen('notifPanel')) return closeNotifications(true);
-      if (overlayOpen('sheetMask')) return closeSheet(true);
-      if (overlayOpen('subMask')) return closeSub(true);
-    });
-    // 浮层打开时压入一条浏览器历史；按钮关闭时同步弹出
-    window.__histPushOv = function () { try { history.pushState({ ov: 1 }, ''); } catch (e) {} };
-    window.__histSyncClose = function () {
-      histLock = true;
-      try { history.back(); } catch (e) {}
-      setTimeout(function () { histLock = false; }, 120);
-    };
-  })();
+  // 手机/浏览器物理返回键：逐层关闭浮层（详情 → 大图 → 通知 → 弹层 → 子页面）
+  // 说明：按钮关闭浮层时不操作浏览器历史；残留的浮层记录由 popstate 自动消费（自愈），
+  // 避免 history.back 与 popstate 竞态导致"按返回没反应"。
+  function histPushOv() { try { history.pushState({ ov: 1 }, ''); } catch (e) {} }
+  window.addEventListener('popstate', function () {
+    if (document.getElementById('detailModal')?.classList.contains('show')) return closeDetail();
+    if (document.getElementById('imgViewer')?.classList.contains('show')) return closeImgViewer();
+    if (document.getElementById('notifPanel')?.classList.contains('show')) return closeNotifications();
+    if (document.getElementById('sheetMask')?.classList.contains('show')) return closeSheet();
+    if (document.getElementById('subMask')?.classList.contains('show')) return closeSub();
+    // 无浮层可关：若当前历史记录仍是浮层记录则继续消费
+    if (history.state && history.state.ov) { try { history.back(); } catch (e) {} }
+  });
 
   // ============================================================
   // 我的订单
@@ -4219,29 +4301,26 @@
     document.getElementById('subTitle').textContent = title;
     fn(document.getElementById('subBody'));
     document.getElementById('subMask').classList.add('show');
-    window.__histPushOv();
+    histPushOv();
   }
-  function closeSub(fromPop) {
+  function closeSub() {
     document.getElementById('subMask').classList.remove('show');
-    if (!fromPop) window.__histSyncClose();
   }
   function openSheet(html) {
     document.getElementById('sheetBody').innerHTML = html;
     document.getElementById('sheetMask').classList.add('show');
-    window.__histPushOv();
+    histPushOv();
   }
-  function closeSheet(fromPop) {
+  function closeSheet() {
     document.getElementById('sheetMask').classList.remove('show');
-    if (fromPop !== true) window.__histSyncClose();
   }
   function viewImg(src) {
     document.getElementById('imgViewerImg').src = src;
     document.getElementById('imgViewer').classList.add('show');
-    window.__histPushOv();
+    histPushOv();
   }
-  function closeImgViewer(fromPop) {
+  function closeImgViewer() {
     document.getElementById('imgViewer').classList.remove('show');
-    if (fromPop !== true) window.__histSyncClose();
   }
 
   // ============================================================
