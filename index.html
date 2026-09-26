@@ -3124,6 +3124,47 @@
       + String(Math.floor(Math.random()*900000)+100000);
   }
 
+  // ===== 数据持久化（localStorage）：刷新 / 重启后商品、订单、收藏等全部保留 =====
+  const STORE_KEY = 'shangtao_data_v1';
+  function persist() {
+    const data = {
+      products: products, orders: orders, favoriteIds: favoriteIds,
+      viewedProducts: viewedProducts, notifications: notifications,
+      profile: profile, addresses: addresses, settings: settings,
+      postComments: postComments, auditLog: auditLog
+    };
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(data));
+    } catch (e) {
+      // 容量超限（多为 base64 图片）：剥离 base64 后重存，商品改用服务器图片不受影响
+      try {
+        data.products = products.map(p => (p.img && p.img.startsWith('data:')) ? Object.assign({}, p, { img: '' }) : p);
+        localStorage.setItem(STORE_KEY, JSON.stringify(data));
+      } catch (e2) {}
+    }
+  }
+  function restore() {
+    try {
+      const d = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+      if (!d) return;
+      if (Array.isArray(d.products) && d.products.length) {
+        products.length = 0;
+        d.products.forEach(p => products.push(p));
+      }
+      if (Array.isArray(d.orders)) orders = d.orders;
+      if (Array.isArray(d.favoriteIds)) favoriteIds = d.favoriteIds;
+      if (Array.isArray(d.viewedProducts)) viewedProducts = d.viewedProducts;
+      if (Array.isArray(d.notifications)) notifications = d.notifications;
+      if (Array.isArray(d.auditLog) && d.auditLog.length) auditLog = d.auditLog;
+      if (Array.isArray(d.addresses) && d.addresses.length) addresses = d.addresses;
+      if (d.profile) Object.assign(profile, d.profile);
+      if (d.settings) Object.assign(settings, d.settings);
+      if (d.postComments) postComments = d.postComments;
+    } catch (e) {}
+  }
+  setInterval(persist, 3000);                     // 定时兜底保存
+  window.addEventListener('beforeunload', persist); // 关页前保存
+
   // ===== 渲染商品 =====
   function renderProducts() {
     // 只展示已上架商品；无 status 字段的初始商品默认视为已上架
@@ -3692,13 +3733,28 @@
     const remaining = MAX_IMGS - uploadImgs.length;
     const arr = Array.from(files).slice(0, remaining);
     if (arr.length === 0) return;
-    let loaded = 0;
+    // 仅前端静态打开（非 3000 端口完整服务）时不上传，退回 base64 预览
+    const canUpload = location.pathname !== '' && (location.protocol === 'http:' || location.protocol === 'https:') && location.port !== '8000';
     arr.forEach(f => {
       const reader = new FileReader();
       reader.onload = e => {
-        uploadImgs.push(e.target.result);
-        loaded++;
-        if (loaded === arr.length) renderUploadGrid();
+        const localData = e.target.result;
+        uploadImgs.push(localData);
+        renderUploadGrid();
+        // 异步上传到服务器持久化（成功后把 base64 替换为 /uploads/ URL）
+        if (canUpload) {
+          const fd = new FormData();
+          fd.append('file', f);
+          fetch('/api/upload', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(j => {
+              if (j && j.code === 0 && j.url) {
+                const i = uploadImgs.indexOf(localData);
+                if (i >= 0) { uploadImgs[i] = j.url; renderUploadGrid(); }
+              }
+            })
+            .catch(() => { /* 服务未启动时保留本地预览，不影响发布 */ });
+        }
       };
       reader.readAsDataURL(f);
     });
@@ -5109,6 +5165,7 @@
   }, 3500);
 
   // ===== 初始化 =====
+  restore();   // 恢复本地持久化数据（商品/订单/收藏等）
   // 首屏骨架屏（提升加载体验）
   (function () {
     let skel = '';
