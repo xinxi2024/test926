@@ -4,6 +4,11 @@
 -- Charset: utf8mb4
 -- ============================================================
 
+-- Windows 下 mysql 客户端默认可能是 GBK，SOURCE 读取 UTF-8 脚本时
+-- 会导致中文 DEFAULT（如 '上海商学院'）报 ERROR 1067，这里强制会话为 utf8mb4
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
 CREATE DATABASE IF NOT EXISTS shangtao
   DEFAULT CHARACTER SET utf8mb4
   DEFAULT COLLATE utf8mb4_unicode_ci;
@@ -159,8 +164,10 @@ CREATE TABLE `post_image` (
 
 -- ------------------------------------------------------------
 -- 初始化数据：一个普通用户 + 一个审核员
--- 默认密码均为 123456（bcrypt 加密）
+-- 登录方式为短信验证码（演示 1234），password 留空
 -- ------------------------------------------------------------
 INSERT INTO `user` (`phone`,`password`,`nickname`,`avatar`,`college`,`role`) VALUES
-('13800138000','$2a$10$wKfQs8mJ5bqZq3t7vN1pUuY3cG8rQh2xL6pN4sF9eWd0aIbXcM7K2','林晓晴','','商务经济学院',0),
-('13900139000','$2a$10$wKfQs8mJ5bqZq3t7vN1pUuY3cG8rQh2xL6pN4sF9eWd0aIbXcM7K2','平台审核员','','平台管理',1);
+('13800138000','','林晓晴','','商务经济学院',0),
+('13900139000','','平台审核员','','平台管理',1);
+
+SET FOREIGN_KEY_CHECKS = 1;

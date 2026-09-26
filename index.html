@@ -1599,6 +1599,304 @@
     font-size: 13px;
   }
 
+  /* ============================================================
+     通用子页面 / 底部弹层 / 图片查看器
+     ============================================================ */
+  .sub-mask {
+    position: absolute; inset: 0; z-index: 120;
+    display: none;
+  }
+  .sub-mask.show { display: block; }
+  .sub-page {
+    position: absolute; inset: 0;
+    background: #f5f6f8;
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform .28s cubic-bezier(.32,.72,0,1);
+  }
+  .sub-mask.show .sub-page { transform: translateX(0); }
+  .sub-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 12px 10px;
+    background: #fff; border-bottom: 1px solid #f0f0f2;
+    flex-shrink: 0;
+  }
+  .sub-back {
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    color: #1f2937;
+  }
+  .sub-title { font-size: 17px; font-weight: 700; color: #111827; }
+  .sub-body {
+    flex: 1; overflow-y: auto; padding: 14px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .sub-body::-webkit-scrollbar { display: none; }
+
+  /* 底部弹层 */
+  .sheet-mask {
+    position: absolute; inset: 0; z-index: 350;
+    background: rgba(0,0,0,.45);
+    display: none;
+  }
+  .sheet-mask.show { display: block; }
+  .sheet {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    padding: 8px 0 calc(10px + env(safe-area-inset-bottom,0px));
+    max-height: 82%;
+    display: flex; flex-direction: column;
+    transform: translateY(100%);
+    transition: transform .3s cubic-bezier(.32,.72,0,1);
+  }
+  .sheet-mask.show .sheet { transform: translateY(0); }
+  .sheet-handle {
+    width: 38px; height: 4px; background: #e5e7eb; border-radius: 2px;
+    margin: 6px auto 8px; flex-shrink: 0;
+  }
+  .sheet-body { overflow-y: auto; padding: 4px 16px 8px; }
+  .sheet-body::-webkit-scrollbar { display: none; }
+  .sheet-title { font-size: 15px; font-weight: 700; text-align: center; margin: 4px 0 12px; color:#111827;}
+  .sheet-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 4px; border-bottom: 1px solid #f5f5f7;
+    font-size: 14px; color: #1f2937; cursor: pointer;
+  }
+  .sheet-item:active { background: #f9fafb; }
+  .sheet-item svg { flex-shrink: 0; }
+  .sheet-item .si-label { flex: 1; }
+  .sheet-item .si-extra { font-size: 12px; color: #9ca3af; }
+  .sheet-gap { height: 8px; background: #f5f6f8; margin: 8px -16px; }
+  .sheet-btn {
+    display: block; width: 100%; box-sizing: border-box;
+    padding: 13px; border: none; border-radius: 12px;
+    font-size: 15px; font-weight: 600; margin-top: 10px; cursor: pointer;
+  }
+  .sheet-btn.primary { background: linear-gradient(135deg,#3aa0ff,#1e73e8); color: #fff; }
+  .sheet-btn.danger { background:#fef2f2; color:#ef4444; }
+  .sheet-btn.plain { background: #f3f4f6; color: #374151; margin-top: 8px; }
+
+  /* 图片查看器 */
+  .imgviewer {
+    position: absolute; inset: 0; z-index: 250;
+    background: rgba(0,0,0,.93);
+    display: none; align-items: center; justify-content: center;
+    flex-direction: column;
+  }
+  .imgviewer.show { display: flex; }
+  .imgviewer img { max-width: 92%; max-height: 76%; border-radius: 6px; }
+  .imgviewer-tip { color: rgba(255,255,255,.7); font-size: 12px; margin-top: 16px; }
+  .imgviewer-close {
+    position: absolute; top: 14px; right: 14px;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,.15); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    border: none; font-size: 18px;
+  }
+
+  /* ============================================================
+     通用内容组件
+     ============================================================ */
+  .card-panel { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+  .form-row { margin-bottom: 14px; }
+  .form-label { font-size: 12.5px; color: #4b5563; margin-bottom: 7px; display: block; font-weight: 600; }
+  .form-input {
+    width: 100%; box-sizing: border-box;
+    border: 1px solid #e5e7eb; border-radius: 11px;
+    padding: 11px 12px; font-size: 13.5px; background: #fff;
+  }
+  textarea.form-input { resize: none; }
+  .form-input:focus { outline: none; border-color: #8b5cf6; }
+  .choice-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .choice-chip {
+    padding: 8px 14px; border-radius: 20px;
+    background: #f3f4f6; font-size: 12.5px; color: #6b7280;
+    border: 1px solid transparent; cursor: pointer;
+  }
+  .choice-chip.active { background: #ede9fe; color: #7c3aed; border-color: #c4b5fd; font-weight: 600; }
+  .full-btn {
+    width: 100%; box-sizing: border-box;
+    padding: 13px; border: none; border-radius: 12px;
+    font-size: 14.5px; font-weight: 600;
+    background: linear-gradient(135deg,#3aa0ff,#1e73e8); color: #fff; cursor: pointer;
+  }
+  .full-btn.purple { background: linear-gradient(135deg,#8b5cf6,#6d28d9); }
+  .full-btn.gray { background:#f3f4f6; color:#6b7280; }
+  .mini-switch {
+    margin-left: auto; width: 42px; height: 25px;
+    border-radius: 13px; background: #e5e7eb; position: relative;
+    transition: background .2s; flex-shrink: 0; cursor: pointer; border:none; padding:0;
+  }
+  .mini-switch.on { background: #7c3aed; }
+  .mini-switch .k {
+    position: absolute; top: 2.5px; left: 3px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #fff; transition: left .2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  }
+  .mini-switch.on .k { left: 19px; }
+  .doc-body { font-size: 13.5px; color: #374151; line-height: 1.85; }
+  .doc-body h3 { font-size: 14.5px; margin: 14px 0 6px; color: #111827; }
+  .doc-body p { margin: 6px 0; }
+  .faq-item { background: #fff; border-radius: 12px; margin-bottom: 9px; overflow: hidden; }
+  .faq-q {
+    padding: 13px 14px; font-size: 13.5px; font-weight: 600;
+    display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+  }
+  .faq-a { padding: 0 14px 13px; font-size: 12.5px; color: #6b7280; line-height: 1.7; display: none; }
+  .faq-item.open .faq-a { display: block; }
+  .faq-arrow { transition: transform .2s; color: #9ca3af; flex-shrink: 0; }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+  .empty-state { text-align: center; padding: 44px 20px; color: #9ca3af; font-size: 13px; }
+  .empty-state .es-icon { font-size: 44px; margin-bottom: 10px; }
+  .ts-badge { font-size: 10.5px; padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+  .ts-pending { background: #fef3c7; color: #d97706; }
+  .ts-online { background: #dcfce7; color: #16a34a; }
+  .ts-rejected { background: #fee2e2; color: #dc2626; }
+  .ts-sold { background: #f3f4f6; color: #6b7280; }
+  .rating-stars { font-size: 30px; letter-spacing: 8px; color: #d1d5db; cursor: pointer; user-select:none;}
+  .rating-stars .s { transition: color .15s; }
+  .rating-stars .s.active { color: #fbbf24; }
+
+  /* ============================================================
+     我的订单页
+     ============================================================ */
+  #page-orders { background: #f5f6f8; }
+  .orders-tabs {
+    display: flex; gap: 6px;
+    background: #fff; padding: 0 10px 10px;
+  }
+  .order-tab {
+    flex: 1; text-align: center; padding: 7px 0;
+    font-size: 12.5px; color: #6b7280;
+    border-radius: 9px; background: #f3f4f6; cursor: pointer;
+  }
+  .order-tab.active { background: #1e73e8; color: #fff; font-weight: 600; }
+  .orders-list { padding: 12px 14px 100px; display: flex; flex-direction: column; gap: 12px; }
+  .order-card { background: #fff; border-radius: 14px; padding: 13px; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+  .order-card-head { display: flex; justify-content: space-between; align-items:center; font-size: 12px; margin-bottom: 10px; }
+  .order-no { color: #9ca3af; }
+  .order-state { font-weight: 700; font-size:12.5px;}
+  .state-unshipped { color: #f59e0b; }
+  .state-shipped { color: #1e73e8; }
+  .state-done { color: #10b981; }
+  .state-canceled { color: #9ca3af; }
+  .order-card-body { display: flex; gap: 11px; }
+  .order-thumb {
+    width: 64px; height: 64px; border-radius: 10px; flex-shrink: 0;
+    background: #f3f4f6 center/cover;
+  }
+  .order-card-info { flex: 1; min-width: 0; display:flex; flex-direction:column;}
+  .order-card-title { font-size: 13.5px; font-weight: 600; line-height: 1.35; }
+  .order-card-seller { font-size: 11px; color: #9ca3af; margin-top: 3px; }
+  .order-card-price { margin-left:auto;font-size: 15px; font-weight: 700; color: #ff4d4f; flex-shrink:0; }
+  .order-card-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 11px; padding-top: 10px; border-top: 1px solid #f5f5f7;
+  }
+  .order-total-lbl { font-size: 12px; color: #6b7280; }
+  .order-total-val { font-size: 15px; font-weight: 700; color: #1f2937; margin-left:3px;}
+  .order-actions { display: flex; gap: 8px; }
+  .order-act-btn {
+    padding: 7px 13px; border-radius: 9px; font-size: 12px;
+    border: 1px solid #e5e7eb; background: #fff; color: #4b5563; cursor:pointer;
+  }
+  .order-act-btn.primary {
+    background: linear-gradient(135deg,#3aa0ff,#1e73e8); color: #fff;
+    border: none; font-weight: 600;
+  }
+  .order-act-btn:active { opacity: .8; }
+
+  /* ============================================================
+     审核员工作台
+     ============================================================ */
+  #page-adminhome { background: #f5f6f8; }
+  .adm-hero {
+    background: linear-gradient(145deg,#4f46e5,#7c3aed 62%,#9333ea);
+    padding: 14px 16px 68px; color: #fff; position: relative;
+  }
+  .adm-hero-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .adm-hero-label { font-size: 18px; font-weight: 700; }
+  .adm-hero-date { font-size: 11px; opacity: .85; margin-top: 5px; }
+  .adm-hero-pill {
+    background: rgba(255,255,255,.18); border-radius: 20px;
+    padding: 5px 11px; font-size: 11px;
+    display: flex; gap: 5px; align-items: center; flex-shrink:0;
+  }
+  .adm-overview {
+    margin: -54px 14px 0; background: #fff; border-radius: 16px;
+    display: flex; box-shadow: 0 8px 24px rgba(79,70,229,.12); position: relative;
+  }
+  .adm-overview-item { flex: 1; text-align: center; padding: 14px 4px; cursor: pointer; }
+  .adm-overview-item + .adm-overview-item { border-left: 1px solid #f3f4f6; }
+  .adm-ov-num { font-size: 21px; font-weight: 800; color: #4f46e5; }
+  .adm-ov-lbl { font-size: 11px; color: #6b7280; margin-top: 3px; }
+  .adm-section { margin: 18px 14px; }
+  .adm-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .adm-section-title { font-size: 15px; font-weight: 700; color:#111827; }
+  .adm-more { font-size: 12px; color: #6b7280; cursor: pointer; }
+  .quick-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+  .quick-cell { background: #fff; border-radius: 13px; padding: 13px 4px; text-align: center; cursor: pointer; transition: transform .15s; }
+  .quick-cell:active { transform: scale(.94); }
+  .quick-ic {
+    width: 38px; height: 38px; border-radius: 11px;
+    margin: 0 auto 6px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .quick-lbl { font-size: 11px; color: #4b5563; }
+  .adm-mini-card {
+    background: #fff; border-radius: 13px; padding: 11px;
+    display: flex; align-items: center; gap: 10px; margin-bottom: 9px;
+  }
+  .adm-mini-img {
+    width: 48px; height: 48px; border-radius: 9px; flex-shrink: 0;
+    background: #f3f4f6 center/cover;
+  }
+  .adm-mini-info { flex: 1; min-width: 0; }
+  .adm-mini-title {
+    font-size: 13px; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .adm-mini-sub { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+  .adm-mini-btns { display: flex; gap: 6px; flex-shrink: 0; }
+  .mini-btn { padding: 6px 11px; border-radius: 8px; font-size: 11px; border: none; font-weight: 600; cursor:pointer;}
+  .mini-btn.ok { background: #ede9fe; color: #7c3aed; }
+  .mini-btn.no { background: #fef2f2; color: #ef4444; }
+  .activity-item {
+    display: flex; gap: 10px; background: #fff;
+    border-radius: 12px; padding: 11px 13px; margin-bottom: 8px;
+  }
+  .activity-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+  .activity-text { font-size: 12.5px; color: #4b5563; line-height:1.5; }
+  .activity-time { color: #9ca3af; font-size: 10.5px; margin-top: 2px; }
+
+  /* 审核列表页紫色主题微调 */
+  .adm-tab.active { background: linear-gradient(135deg,#8b5cf6,#6d28d9); }
+  .review-btn.approve { background: linear-gradient(135deg,#8b5cf6,#6d28d9); }
+
+  /* 评论弹层 */
+  .comment-item { display: flex; gap: 9px; padding: 10px 0; border-bottom: 1px solid #f7f7f9; }
+  .comment-item img { width: 30px; height: 30px; border-radius: 50%; flex-shrink:0;}
+  .comment-name { font-size: 12px; color: #6b7280; }
+  .comment-text { font-size: 13px; margin-top: 2px; color:#1f2937; }
+  .comment-time { font-size: 10px; color: #b6bcc6; margin-top: 2px; }
+  .comment-input-row { display: flex; gap: 8px; padding: 10px 0 4px; }
+  .comment-input-row input {
+    flex: 1; border: 1px solid #e5e7eb; border-radius: 18px;
+    padding: 9px 14px; font-size: 13px;
+  }
+  .comment-input-row input:focus { outline:none; border-color:#8b5cf6;}
+  .comment-input-row button {
+    border: none; background: linear-gradient(135deg,#8b5cf6,#6d28d9);
+    color: #fff; border-radius: 18px; padding: 0 16px; font-size: 13px; cursor:pointer;
+  }
+
+  /* 主题切换：审核员紫色导航 */
+  .phone.theme-admin .nav-item.active { color: #7c3aed; }
+  .phone.theme-admin .publish-btn { background: linear-gradient(135deg,#8b5cf6,#6d28d9); box-shadow: 0 6px 16px rgba(124,58,237,.4); }
+  #detailFavBtn.is-faved { background:#fef2f2; color:#ef4444; border-color:#fecaca; }
+
   /* ===== Toast ===== */
   .toast {
     position: absolute;
@@ -1609,7 +1907,7 @@
     padding: 12px 20px;
     border-radius: 10px;
     font-size: 13px;
-    z-index: 200;
+    z-index: 450;
     opacity: 0;
     pointer-events: none;
     transition: opacity .3s;
@@ -1937,19 +2235,19 @@
         <div class="login-bottom">
           其他登录方式
           <div class="login-other">
-            <div class="login-other-item" onclick="showToast('微信登录')">
+            <div class="login-other-item" onclick="thirdLogin('微信')">
               <div class="login-other-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="#07c160"><path d="M8.691 2C4.442 2 1 4.897 1 8.5c0 2.05 1.114 3.88 2.851 5.07L3 16l2.786-1.393c.79.22 1.63.393 2.504.393.156 0 .31-.004.464-.01a5.46 5.46 0 0 1-.275-1.667c0-3.17 3.07-5.74 6.865-5.74.246 0 .487.012.726.035C15.35 4.46 12.295 2 8.691 2zm-2.7 3.4a.95.95 0 1 1 0 1.9.95.95 0 0 1 0-1.9zm5.4 0a.95.95 0 1 1 0 1.9.95.95 0 0 1 0-1.9zM16.5 9.5c-3.21 0-5.82 2.24-5.82 5s2.61 5 5.82 5c.65 0 1.28-.09 1.86-.26L20.5 20l-.52-1.73c1.45-.97 2.34-2.46 2.34-4.17 0-2.76-2.61-5-5.82-5zm-1.9 2.5a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6zm3.8 0a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6z"/></svg>
               </div>
               微信
             </div>
-            <div class="login-other-item" onclick="showToast('QQ登录')">
+            <div class="login-other-item" onclick="thirdLogin('QQ')">
               <div class="login-other-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="#12b7f5"><path d="M12 2C7.6 2 6 5 6 8.5c0 1.2.1 2.3.3 3.3-.5.5-1.3 1.5-1.6 2.3-.4 1.2.3 1.5.8 1 .5-.4 1.1-1 1.5-1.4.3.8.7 1.5 1.1 2.1-.8.3-2.4.9-2.4 1.9 0 1.4 3.8 1.9 6.3 1.9s6.3-.5 6.3-1.9c0-1-1.6-1.6-2.4-1.9.4-.6.8-1.3 1.1-2.1.4.4 1 1 1.5 1.4.5.5 1.2.2.8-1-.3-.8-1.1-1.8-1.6-2.3.2-1 .3-2.1.3-3.3C18 5 16.4 2 12 2z"/></svg>
               </div>
               QQ
             </div>
-            <div class="login-other-item" onclick="showToast('校园卡登录')">
+            <div class="login-other-item" onclick="thirdLogin('校园卡')">
               <div class="login-other-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="#1e73e8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg>
               </div>
@@ -1982,7 +2280,7 @@
           <div class="search-bar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
             <input type="text" placeholder="搜索闲置物品" id="searchInput" />
-            <div class="filter-btn" onclick="showToast('筛选功能')">
+            <div class="filter-btn" onclick="openFilterSheet()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
             </div>
           </div>
@@ -1990,19 +2288,19 @@
 
         <!-- 轮播 Banner -->
         <div class="banner-wrap">
-          <div class="banner b1 active">
+          <div class="banner b1 active" onclick="openBanner(0)">
             <div class="banner-content">
               <h2>春季焕新</h2>
               <p>毕业季 · 好物流转</p>
             </div>
           </div>
-          <div class="banner b2">
+          <div class="banner b2" onclick="openBanner(1)">
             <div class="banner-content">
               <h2>教材回收</h2>
               <p>低价淘好书，省钱又环保</p>
             </div>
           </div>
-          <div class="banner b3">
+          <div class="banner b3" onclick="openBanner(2)">
             <div class="banner-content">
               <h2>潮流穿搭</h2>
               <p>学长学姐的闲置好物</p>
@@ -2041,7 +2339,7 @@
             </div>
             <span>生活用品</span>
           </div>
-          <div class="cat-item" onclick="showToast('更多分类敬请期待')">
+          <div class="cat-item" onclick="openAllCategories()">
             <div class="cat-icon cat-more">
               <svg viewBox="0 0 24 24" fill="#fff"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
             </div>
@@ -2194,7 +2492,7 @@
       <div class="page" id="page-message">
         <div class="msg-header">
           <div class="msg-title">消息</div>
-          <div class="msg-menu" onclick="showToast('消息设置')">
+          <div class="msg-menu" onclick="openMsgSettings()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
           </div>
         </div>
@@ -2232,8 +2530,8 @@
             </div>
             <div class="profile-info">
               <div class="profile-name-row">
-                <span class="profile-name">林晓晴</span>
-                <span class="edit-btn" onclick="showToast('编辑资料')">
+                <span class="profile-name" id="profileNameText">林晓晴</span>
+                <span class="edit-btn" onclick="openEditProfile()">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                 </span>
               </div>
@@ -2245,12 +2543,12 @@
               </div>
             </div>
           </div>
-          <div class="profile-bio">喜欢摄影和阅读，常出没于图书馆和操场。闲置物品会定期更新，欢迎来聊～</div>
+          <div class="profile-bio" id="profileBioText">喜欢摄影和阅读，常出没于图书馆和操场。闲置物品会定期更新，欢迎来聊～</div>
           <div class="profile-stats">
-            <div class="p-stat"><div class="p-num">12</div><div class="p-label">发布</div></div>
-            <div class="p-stat"><div class="p-num">48</div><div class="p-label">收藏</div></div>
-            <div class="p-stat"><div class="p-num">8</div><div class="p-label">订单</div></div>
-            <div class="p-stat"><div class="p-num">156</div><div class="p-label">浏览</div></div>
+            <div class="p-stat"><div class="p-num" id="pnPublish">0</div><div class="p-label">发布</div></div>
+            <div class="p-stat"><div class="p-num" id="pnFav">0</div><div class="p-label">收藏</div></div>
+            <div class="p-stat"><div class="p-num" id="pnOrder">0</div><div class="p-label">订单</div></div>
+            <div class="p-stat"><div class="p-num" id="pnView">0</div><div class="p-label">浏览</div></div>
           </div>
         </div>
 
@@ -2265,36 +2563,36 @@
               <span class="service-count" id="adminPendingCount" style="color:#f59e0b;"></span>
               <span class="menu-arrow">›</span>
             </div>
-            <div class="service-item" onclick="showToast('我的发布')">
+            <div class="service-item" onclick="openMyPublish()">
               <div class="service-icon s-blue">
                 <svg class="ic" viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
               </div>
               <span class="service-label">我的发布</span>
-              <span class="service-count">12件</span>
+              <span class="service-count" id="svcPubCount">0件</span>
               <span class="menu-arrow">›</span>
             </div>
-            <div class="service-item" onclick="showToast('我的收藏')">
+            <div class="service-item" onclick="openMyFavorites()">
               <div class="service-icon s-red">
                 <svg class="ic" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg>
               </div>
               <span class="service-label">我的收藏</span>
-              <span class="service-count">48件</span>
+              <span class="service-count" id="svcFavCount">0件</span>
               <span class="menu-arrow">›</span>
             </div>
-            <div class="service-item" onclick="showToast('我的订单')">
+            <div class="service-item" onclick="switchPage('orders')">
               <div class="service-icon s-orange">
                 <svg class="ic" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
               </div>
               <span class="service-label">我的订单</span>
-              <span class="service-count">8笔</span>
+              <span class="service-count" id="svcOrderCount">0笔</span>
               <span class="menu-arrow">›</span>
             </div>
-            <div class="service-item" onclick="showToast('浏览记录')">
+            <div class="service-item" onclick="openViewHistory()">
               <div class="service-icon s-green">
                 <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               </div>
               <span class="service-label">浏览记录</span>
-              <span class="service-count">156条</span>
+              <span class="service-count" id="svcViewCount">0条</span>
               <span class="menu-arrow">›</span>
             </div>
           </div>
@@ -2310,7 +2608,7 @@
               <span class="service-label">账号设置</span>
               <span class="menu-arrow">›</span>
             </div>
-            <div class="service-item" onclick="showToast('帮助与反馈')">
+            <div class="service-item" onclick="openHelp()">
               <div class="service-icon s-gray">
                 <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
               </div>
@@ -2333,7 +2631,7 @@
           <div style="width:28px;"></div>
         </div>
 
-        <div class="acct-user-card" onclick="showToast('编辑个人资料')">
+        <div class="acct-user-card" onclick="openEditProfile()">
           <div class="acct-avatar"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20female%20college%20student%20smiling%20headshot&image_size=square" alt="" /></div>
           <div class="acct-user-info">
             <div class="acct-name-row">
@@ -2351,41 +2649,41 @@
 
         <div class="acct-group-title">账号信息</div>
         <div class="acct-list">
-          <div class="acct-row" onclick="showToast('修改头像')">
+          <div class="acct-row" onclick="openChangeAvatar()">
             <div class="acct-ic-bg ic-blue"><svg class="ic" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>
             <span class="acct-label">修改头像</span>
             <img class="acct-mini-avatar" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20female%20college%20student%20smiling%20headshot&image_size=square" alt="" />
             <svg class="acct-arrow" viewBox="0 0 24 24" fill="none" stroke="#c7c9cf" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
           </div>
-          <div class="acct-row" onclick="showToast('修改昵称')">
+          <div class="acct-row" onclick="openEditName()">
             <div class="acct-ic-bg ic-orange"><svg class="ic" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
             <span class="acct-label">修改昵称</span>
             <span class="acct-value">林晓晴</span>
             <svg class="acct-arrow" viewBox="0 0 24 24" fill="none" stroke="#c7c9cf" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
           </div>
-          <div class="acct-row" onclick="showToast('修改密码')">
+          <div class="acct-row" onclick="openChangePassword()">
             <div class="acct-ic-bg ic-green"><svg class="ic" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
             <span class="acct-label">修改密码</span>
             <span class="acct-value">已设置</span>
             <svg class="acct-arrow" viewBox="0 0 24 24" fill="none" stroke="#c7c9cf" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
           </div>
-          <div class="acct-row" onclick="showToast('收货地址')">
+          <div class="acct-row" onclick="openAddresses()">
             <div class="acct-ic-bg ic-yellow"><svg class="ic" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
             <span class="acct-label">收货地址</span>
-            <span class="acct-value">2个地址</span>
+            <span class="acct-value" id="addrCountText">2个地址</span>
             <svg class="acct-arrow" viewBox="0 0 24 24" fill="none" stroke="#c7c9cf" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
           </div>
         </div>
 
         <div class="acct-group-title">偏好设置</div>
         <div class="acct-list">
-          <div class="acct-row" onclick="showToast('消息通知设置')">
+          <div class="acct-row" onclick="openNotifSettings()">
             <div class="acct-ic-bg ic-blue"><svg class="ic" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></div>
             <span class="acct-label">消息通知设置</span>
             <span class="acct-dot"></span>
             <svg class="acct-arrow" viewBox="0 0 24 24" fill="none" stroke="#c7c9cf" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
           </div>
-          <div class="acct-row" onclick="showToast('隐私设置')">
+          <div class="acct-row" onclick="openPrivacy()">
             <div class="acct-ic-bg ic-purple"><svg class="ic" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
             <span class="acct-label">隐私设置</span>
             <svg class="acct-arrow" viewBox="0 0 24 24" fill="none" stroke="#c7c9cf" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
@@ -2414,17 +2712,17 @@
 
         <div class="acct-group-title">关于</div>
         <div class="acct-list">
-          <div class="acct-row" onclick="showToast('版本信息 v2.3.1')">
+          <div class="acct-row" onclick="openVersion()">
             <div class="acct-ic-bg ic-green"><svg class="ic" viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
             <span class="acct-label">版本信息</span>
             <span class="acct-value">v2.3.1</span>
           </div>
-          <div class="acct-row" onclick="showToast('用户协议')">
+          <div class="acct-row" onclick="openDoc('用户协议')">
             <div class="acct-ic-bg ic-blue"><svg class="ic" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
             <span class="acct-label">用户协议</span>
             <svg class="acct-arrow" viewBox="0 0 24 24" fill="none" stroke="#c7c9cf" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
           </div>
-          <div class="acct-row" onclick="showToast('隐私政策')">
+          <div class="acct-row" onclick="openDoc('隐私政策')">
             <div class="acct-ic-bg ic-purple"><svg class="ic" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></div>
             <span class="acct-label">隐私政策</span>
             <svg class="acct-arrow" viewBox="0 0 24 24" fill="none" stroke="#c7c9cf" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
@@ -2436,6 +2734,82 @@
           退出登录
         </div>
         <div class="acct-footer">上商淘 · 上海商学院校园二手交易平台</div>
+      </div>
+
+      <!-- 我的订单页 -->
+      <div class="page" id="page-orders">
+        <div class="admin-header">
+          <div class="back-btn" onclick="switchPage('home')" style="color:#1f2937;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </div>
+          <div class="admin-title">我的订单</div>
+          <div style="width:28px;"></div>
+        </div>
+        <div class="orders-tabs" id="ordersTabs">
+          <span class="order-tab active" onclick="selOrderTab(this,'all')">全部</span>
+          <span class="order-tab" onclick="selOrderTab(this,'unshipped')">待发货</span>
+          <span class="order-tab" onclick="selOrderTab(this,'shipped')">待收货</span>
+          <span class="order-tab" onclick="selOrderTab(this,'done')">已完成</span>
+          <span class="order-tab" onclick="selOrderTab(this,'canceled')">已取消</span>
+        </div>
+        <div class="orders-list" id="ordersList"></div>
+      </div>
+
+      <!-- 审核员工作台 -->
+      <div class="page" id="page-adminhome">
+        <div class="adm-hero">
+          <div class="adm-hero-top">
+            <div>
+              <div class="adm-hero-label">审核工作台</div>
+              <div class="adm-hero-date" id="admDate"></div>
+            </div>
+            <div class="adm-hero-pill">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              官方认证
+            </div>
+          </div>
+        </div>
+        <div class="adm-overview" id="admOverview"></div>
+        <div class="adm-section">
+          <div class="adm-section-head"><span class="adm-section-title">快捷入口</span></div>
+          <div class="quick-grid">
+            <div class="quick-cell" onclick="goAuditQueue('pending')">
+              <div class="quick-ic" style="background:#fef3c7;color:#d97706;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+              </div>
+              <div class="quick-lbl">待审核</div>
+            </div>
+            <div class="quick-cell" onclick="goAuditQueue('online')">
+              <div class="quick-ic" style="background:#dcfce7;color:#16a34a;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              </div>
+              <div class="quick-lbl">已通过</div>
+            </div>
+            <div class="quick-cell" onclick="goAuditQueue('rejected')">
+              <div class="quick-ic" style="background:#fee2e2;color:#dc2626;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </div>
+              <div class="quick-lbl">已驳回</div>
+            </div>
+            <div class="quick-cell" onclick="switchPage('publish')">
+              <div class="quick-ic" style="background:#ede9fe;color:#7c3aed;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <div class="quick-lbl">发布闲置</div>
+            </div>
+          </div>
+        </div>
+        <div class="adm-section">
+          <div class="adm-section-head">
+            <span class="adm-section-title">最新待审核</span>
+            <span class="adm-more" onclick="goAuditQueue('pending')">全部 ›</span>
+          </div>
+          <div id="admPendingBox"></div>
+        </div>
+        <div class="adm-section" style="margin-bottom:100px;">
+          <div class="adm-section-head"><span class="adm-section-title">审核动态</span></div>
+          <div id="admActivityBox"></div>
+        </div>
       </div>
 
     </div>
@@ -2480,7 +2854,7 @@
           <div class="modal-desc" id="modalDesc"></div>
         </div>
         <div class="modal-footer">
-          <button class="btn-outline" onclick="showToast('已收藏')">收藏</button>
+          <button class="btn-outline" id="detailFavBtn" onclick="detailToggleFav()">♡ 收藏</button>
           <button class="btn-primary" onclick="openOrder()">立即购买</button>
         </div>
       </div>
@@ -2533,6 +2907,35 @@
       </div>
     </div>
 
+    <!-- 通用子页面 -->
+    <div class="sub-mask" id="subMask">
+      <div class="sub-page">
+        <div class="sub-header">
+          <span class="sub-back" onclick="closeSub()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </span>
+          <span class="sub-title" id="subTitle"></span>
+          <span style="width:30px;"></span>
+        </div>
+        <div class="sub-body" id="subBody"></div>
+      </div>
+    </div>
+
+    <!-- 通用底部弹层 -->
+    <div class="sheet-mask" id="sheetMask" onclick="closeSheet()">
+      <div class="sheet" onclick="event.stopPropagation()">
+        <div class="sheet-handle"></div>
+        <div class="sheet-body" id="sheetBody"></div>
+      </div>
+    </div>
+
+    <!-- 大图查看器 -->
+    <div class="imgviewer" id="imgViewer" onclick="closeImgViewer(event)">
+      <button class="imgviewer-close" onclick="closeImgViewer()">✕</button>
+      <img id="imgViewerImg" src="" alt="大图" onclick="event.stopPropagation()" />
+      <div class="imgviewer-tip">点击任意处关闭</div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
@@ -2575,15 +2978,58 @@
   let currentCat = null;
   let currentSort = 'all';
 
+  // ===== 业务数据（订单 / 收藏 / 浏览 / 地址 / 资料 / 审核动态） =====
+  let favoriteIds = [];                        // 收藏的商品 id
+  let viewedProducts = [];                     // 浏览记录 {id, time}
+  let orders = [];                             // 订单列表
+  let auditLog = [                             // 审核动态
+    { action:'approve', title:'Kindle Paperwhite 5 电子书阅读器', time:'今天 09:42' },
+    { action:'reject', title:'全新未拆封 AirPods Pro（疑似违规商品）', time:'今天 09:15' },
+    { action:'approve', title:'考研英语一历年真题 2010-2025', time:'昨天 18:30' },
+  ];
+  let profile = {                              // 当前登录用户资料
+    name: '林晓晴',
+    bio: '喜欢摄影和阅读，常出没于图书馆和操场。闲置物品会定期更新，欢迎来聊～',
+    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20a%20young%20asian%20female%20university%20student%20smiling%20professional%20headshot%20clean%20background&image_size=square'
+  };
+  let addresses = [
+    { id:1, name:'林晓晴', phone:'138****8000', campus:'奉贤校区', detail:'奉浦校区 12号楼 302室', isDefault:true },
+    { id:2, name:'林晓晴', phone:'138****8000', campus:'徐汇校区', detail:'徐汇校区 5号快递站代收', isDefault:false },
+  ];
+  let postComments = {};                       // 帖子评论 {postIdx: [{name,avatar,text,time}]}
+  const defaultComments = [
+    { name:'张同学', text:'东西还在吗？可以小刀吗～', time:'8分钟前' },
+    { name:'李学姐', text:'已拍，明天中午图书馆门口交易！', time:'20分钟前' },
+    { name:'阿杰', text:'成色看着不错，帮顶！', time:'1小时前' },
+  ];
+  const commentAvatar = 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20college%20student%20headshot&image_size=square';
+  let filterState = { minPrice:null, maxPrice:null };   // 高级筛选
+  let settings = { trade:true, system:false, like:true, comment:true, showOnline:true, allowStranger:true }; // 开关状态
+  let currentOrderTab = 'all';
+
+  // JS 字符串安全转义
+  function escapeQuote(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+  function nowStr() {
+    const d = new Date();
+    return `${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  }
+  function genOrderNo() {
+    const d = new Date();
+    return '' + d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0')
+      + String(Math.floor(Math.random()*900000)+100000);
+  }
+
   // ===== 渲染商品 =====
   function renderProducts() {
     // 只展示已上架商品；无 status 字段的初始商品默认视为已上架
     let list = products.filter(p =>
-      p.status !== 'pending' && p.status !== 'sold' && p.status !== 'rejected'
+      p.status !== 'pending' && p.status !== 'sold' && p.status !== 'rejected' && p.status !== 'offline'
     );
     if (currentCat) list = list.filter(p => p.cat === currentCat);
     const kw = document.getElementById('searchInput').value.trim();
     if (kw) list = list.filter(p => p.title.includes(kw) || (p.desc && p.desc.includes(kw)));
+    if (filterState.minPrice !== null) list = list.filter(p => p.price >= filterState.minPrice);
+    if (filterState.maxPrice !== null) list = list.filter(p => p.price <= filterState.maxPrice);
 
     // 排序（使用 slice 避免修改原数组）
     if (currentSort === 'price') {
@@ -2607,7 +3053,7 @@
         <div class="product-img" style="background-image:url('${p.img}')">
           ${p.isNew ? '<span class="new-badge">新上架</span>' : ''}
           <span class="tag tag-${p.cat==='教材'?'book':p.cat==='服饰'?'cloth':p.cat==='数码'?'digital':'life'}">${p.cat}</span>
-          <div class="fav" onclick="event.stopPropagation(); toggleFav(this)"><svg class="ic" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></div>
+          <div class="fav ${favoriteIds.includes(p.id)?'active':''}" onclick="event.stopPropagation(); toggleFav(${p.id},this)"><svg class="ic" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></div>
         </div>
         <div class="product-info">
           <div class="product-title">${p.title}</div>
@@ -2627,8 +3073,20 @@
   }
 
   // ===== 收藏切换 =====
-  function toggleFav(el) {
-    el.classList.toggle('active');
+  function toggleFav(id, el) {
+    const i = favoriteIds.indexOf(id);
+    const p = products.find(x => x.id === id);
+    if (i >= 0) {
+      favoriteIds.splice(i, 1);
+      if (el) el.classList.remove('active');
+      showToast('已取消收藏');
+    } else {
+      favoriteIds.push(id);
+      if (el) el.classList.add('active');
+      showToast('❤ 已加入收藏');
+      if (p) addNotification(`您收藏了商品「${p.title}」`, 'fav');
+    }
+    refreshProfileStats();
   }
 
   // ===== 设置页开关切换 =====
@@ -2674,7 +3132,28 @@
     document.getElementById('modalLocation').innerHTML = '<svg class="ic meta-ic" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>' + p.location;
     document.getElementById('modalViews').innerHTML = '<svg class="ic meta-ic" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>' + p.views + '次浏览';
     document.getElementById('modalDesc').textContent = p.desc;
+    // 收藏按钮状态
+    const favBtn = document.getElementById('detailFavBtn');
+    const isFav = favoriteIds.includes(id);
+    favBtn.textContent = isFav ? '♥ 已收藏' : '♡ 收藏';
+    favBtn.classList.toggle('is-faved', isFav);
+    // 浏览记录追踪（同一商品只保留最新一次，置顶）
+    p.views++;
+    document.getElementById('modalViews').innerHTML = '<svg class="ic meta-ic" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>' + p.views + '次浏览';
+    const vi = viewedProducts.findIndex(v => v.id === id);
+    if (vi >= 0) viewedProducts.splice(vi, 1);
+    viewedProducts.unshift({ id, time: nowStr() });
+    refreshProfileStats();
     document.getElementById('detailModal').classList.add('show');
+  }
+  // 详情页收藏按钮
+  function detailToggleFav() {
+    if (currentDetailId === null) return;
+    const isFav = favoriteIds.includes(currentDetailId);
+    toggleFav(currentDetailId, null);
+    const favBtn = document.getElementById('detailFavBtn');
+    favBtn.textContent = !isFav ? '♥ 已收藏' : '♡ 收藏';
+    favBtn.classList.toggle('is-faved', !isFav);
   }
   function closeDetail(e) {
     if (e && e.target !== e.currentTarget) return;
@@ -2700,24 +3179,48 @@
   function confirmOrder() {
     const p = products.find(x => x.id === currentDetailId);
     if (!p) return;
+    if (orders.some(o => o.productId === p.id && o.status !== 'canceled')) {
+      showToast('该商品您已下单，请勿重复购买');
+      return;
+    }
 
-    // ===== 后端接口预留：POST /api/order/create =====
-    // fetch('/api/order/create', {
+    // ===== 后端接口预留：POST /api/orders/create =====
+    // fetch('/api/orders/create', {
     //   method:'POST',
     //   headers:{'Content-Type':'application/json'},
     //   body: JSON.stringify({ productId: p.id, price: p.price })
     // }).then(r=>r.json()).then(data=>{ /* 下单成功 */ });
 
+    // 生成订单
+    orders.unshift({
+      orderNo: genOrderNo(),
+      productId: p.id,
+      title: p.title,
+      img: p.img,
+      seller: p.seller,
+      price: p.price,
+      status: 'unshipped',           // unshipped 待发货 / shipped 待收货 / done 已完成 / canceled 已取消
+      createTime: nowStr(),
+      address: (addresses.find(a=>a.isDefault) || addresses[0])
+    });
     p.status = 'sold';
     closeOrder();
     closeDetail();
-    addNotification(`您购买的商品「${p.title}」下单成功，请等待卖家确认发货`, 'order');
-    showToast('✅ 下单成功！已通知卖家');
+    addNotification(`您购买的商品「${p.title}」下单成功，订单号 ${orders[0].orderNo}，请等待卖家发货`, 'order');
     renderProducts();
-    // 模拟卖家回复
+    refreshProfileStats();
+    showToast('✅ 下单成功！可在「我的订单」查看');
+    // 模拟卖家 2 秒后发货
     setTimeout(() => {
-      showToast('💬 卖家已回复，请在消息中查看');
-    }, 1200);
+      const o = orders.find(x => x.productId === p.id);
+      if (o && o.status === 'unshipped') {
+        o.status = 'shipped';
+        o.shipTime = nowStr();
+        addNotification(`您的订单「${p.title}」卖家已发货，请留意查收`, 'order');
+        if (document.getElementById('page-orders').classList.contains('active')) renderOrders();
+        showToast('📦 卖家已发货！');
+      }
+    }, 2500);
   }
 
   // ===== 审核中心 =====
@@ -2727,6 +3230,7 @@
     const pendingCount = products.filter(p => p.status === 'pending').length;
     const onlineCount = products.filter(p => p.status === 'online' || (!p.status && p.status !== 'sold')).length;
     const rejectedCount = products.filter(p => p.status === 'rejected').length;
+    const soldCount = products.filter(p => p.status === 'sold').length;
 
     // 统计卡片
     document.getElementById('adminStats').innerHTML = `
@@ -2744,8 +3248,10 @@
       list = products.filter(p => p.status === 'pending');
     } else if (admCurrentTab === 'online') {
       list = products.filter(p => p.status === 'online' || (!p.status && p.status !== 'sold' && p.status !== 'rejected'));
-    } else {
+    } else if (admCurrentTab === 'rejected') {
       list = products.filter(p => p.status === 'rejected');
+    } else {
+      list = products.filter(p => p.status === 'sold');
     }
 
     const container = document.getElementById('adminList');
@@ -2804,28 +3310,25 @@
 
     p.status = 'online';
     p.isNew = true;
-    p.auditTime = new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+    p.auditTime = nowStr();
     addNotification(`您的商品「${p.title}」已通过审核，已成功上架！`, 'approve');
+    auditLog.unshift({ action:'approve', title:p.title, time: nowStr() });
     renderAdmin();
+    renderAdminHome();
     showToast('✅ 已通过审核并上架');
   }
 
   function rejectProduct(id) {
     const p = products.find(x => x.id === id);
     if (!p) return;
-
-    // ===== 后端接口预留：POST /api/product/reject =====
-    // fetch('/api/product/approve', {
-    //   method:'POST',
-    //   headers:{'Content-Type':'application/json'},
-    //   body: JSON.stringify({ productId: id, approved: false, reason: '商品信息不完整' })
-    // }).then(r=>r.json());
-
+    // 演示：使用统一的驳回理由（后端会弹窗让审核员选择原因）
     p.status = 'rejected';
     p.rejectReason = '商品图片不清晰，信息描述不完整，请修改后重新发布';
-    p.auditTime = new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+    p.auditTime = nowStr();
     addNotification(`您的商品「${p.title}」被驳回：${p.rejectReason}`, 'reject');
+    auditLog.unshift({ action:'reject', title:p.title, time: nowStr() });
     renderAdmin();
+    renderAdminHome();
     showToast('已驳回并通知发布者');
   }
 
@@ -2920,7 +3423,7 @@
       const origIdx = posts.indexOf(p);
       const imgCount = p.imgs.length;
       const imgCls = imgCount === 0 ? '' : 'c' + Math.min(imgCount, 4);
-      const imgsHtml = imgCount > 0 ? `<div class="post-imgs ${imgCls}">${p.imgs.slice(0,4).map(src=>`<img src="${src}" alt="" onclick="showToast('查看大图')" />`).join('')}</div>` : '';
+      const imgsHtml = imgCount > 0 ? `<div class="post-imgs ${imgCls}">${p.imgs.slice(0,4).map(src=>`<img src="${src}" alt="" onclick="viewImg('${src}')" />`).join('')}</div>` : '';
       const tagsHtml = p.tags.length > 0 ? `<div class="post-tags">${p.tags.map(t=>`<span class="post-hashtag">${t}</span>`).join('')}</div>` : '';
       return `
       <div class="post-card">
@@ -2935,7 +3438,7 @@
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${p.time} · ${p.campus}
             </div>
           </div>
-          <div class="post-more" onclick="showToast('更多操作')">
+          <div class="post-more" onclick="openPostMore(${origIdx})">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
           </div>
         </div>
@@ -2947,11 +3450,11 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg>
             <span class="like-cnt">${p.likes}</span>
           </div>
-          <div class="post-action" onclick="showToast('评论')">
+          <div class="post-action" onclick="openComments(${origIdx})">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             <span>${p.comments}</span>
           </div>
-          <div class="post-action share" onclick="showToast('分享')">
+          <div class="post-action share" onclick="openShare('${escapeQuote(p.text)}')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
           </div>
         </div>
@@ -3138,7 +3641,7 @@
       title: title,
       price: Number(price),
       img: uploadImgs[0],
-      seller: currentRole === 'admin' ? '审核员' : '林晓晴',
+      seller: currentRole === 'admin' ? '审核员' : profile.name,
       location: '奉贤校区',
       views: 0,
       desc: document.getElementById('pDesc').value || '卖家很懒，什么都没留下～',
@@ -3176,6 +3679,7 @@
     currentRole = role;
     document.getElementById('roleUser').classList.toggle('active', role === 'user');
     document.getElementById('roleAdmin').classList.toggle('active', role === 'admin');
+    applyTheme();
     // 切换手机号提示（演示）
     const phoneInput = document.getElementById('loginPhone');
     if (role === 'admin') {
@@ -3215,10 +3719,11 @@
     showToast('登录成功（' + roleText + '）');
     setTimeout(() => {
       document.getElementById('loginMask').classList.add('hide');
-      // 审核员进入审核中心，普通用户进入首页
+      // 审核员进入工作台，普通用户进入首页
       if (currentRole === 'admin') {
         renderAdmin();
-        switchPage('admin');
+        renderAdminHome();
+        switchPage('adminhome');
       } else {
         renderProducts();
         switchPage('home');
@@ -3234,13 +3739,18 @@
     selectRole(currentRole === 'admin' ? 'user' : 'admin');
     showToast('已切换为：' + (currentRole === 'admin' ? '审核员' : '普通用户'));
     setTimeout(() => {
-      if (currentRole === 'admin') { renderAdmin(); switchPage('admin'); }
+      if (currentRole === 'admin') { renderAdmin(); renderAdminHome(); switchPage('adminhome'); }
       else { renderProducts(); switchPage('home'); }
     }, 500);
   }
   function goAdmin() {
     renderAdmin();
-    switchPage('admin');
+    renderAdminHome();
+    switchPage('adminhome');
+  }
+  // 主题切换（紫色审核员主题）
+  function applyTheme() {
+    document.querySelector('.phone').classList.toggle('theme-admin', currentRole === 'admin');
   }
   // 根据角色更新「我的」页面
   function refreshProfileRole() {
@@ -3254,25 +3764,1062 @@
       badge.textContent = currentRole === 'admin' ? '🛡 审核员' : '普通用户';
       badge.classList.toggle('admin', currentRole === 'admin');
     }
+    document.getElementById('profileNameText').textContent = profile.name;
+    document.getElementById('profileBioText').textContent = profile.bio;
+    applyTheme();
+    refreshProfileStats();
+  }
+  // 刷新「我的」页统计数字
+  function refreshProfileStats() {
+    const myPub = products.filter(p => p.seller === profile.name || p.seller === '我').length;
+    const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    setTxt('pnPublish', myPub);
+    setTxt('pnFav', favoriteIds.length);
+    setTxt('pnOrder', orders.length);
+    setTxt('pnView', viewedProducts.length);
+    setTxt('svcPubCount', myPub + '件');
+    setTxt('svcFavCount', favoriteIds.length + '件');
+    setTxt('svcOrderCount', orders.length + '笔');
+    setTxt('svcViewCount', viewedProducts.length + '条');
   }
 
   // ===== 页面切换 =====
   function switchPage(name) {
+    // 审核员点「首页」进入工作台
+    if (name === 'home' && currentRole === 'admin') name = 'adminhome';
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + name).classList.add('active');
     document.querySelectorAll('.nav-item').forEach(n => {
       n.classList.toggle('active', n.dataset.page === name);
     });
-    // 聊天页隐藏底部导航
+    // 全屏页隐藏底部导航
     const tabBar = document.querySelector('.tab-bar');
-    if (name === 'chat') {
-      tabBar.style.display = 'none';
-    } else {
-      tabBar.style.display = '';
-    }
+    const hideBar = ['chat','orders','adminhome'].includes(name);
+    tabBar.style.display = hideBar ? 'none' : '';
     const pageEl = document.getElementById('page-' + name);
     pageEl.scrollTop = 0;
-    if (name === 'account') refreshProfileRole();
+    if (name === 'account' || name === 'profile') refreshProfileRole();
+    if (name === 'orders') renderOrders();
+    if (name === 'adminhome') renderAdminHome();
+  }
+
+  // ============================================================
+  // 我的订单
+  // ============================================================
+  const ORDER_STATE = { unshipped:'待发货', shipped:'待收货', done:'已完成', canceled:'已取消' };
+  function selOrderTab(el, tab) {
+    document.querySelectorAll('#ordersTabs .order-tab').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    currentOrderTab = tab;
+    renderOrders();
+  }
+  function renderOrders() {
+    const box = document.getElementById('ordersList');
+    const list = currentOrderTab === 'all' ? orders : orders.filter(o => o.status === currentOrderTab);
+    if (!list.length) {
+      box.innerHTML = `<div class="empty-state">
+        <div class="es-icon">🛍️</div>
+        ${currentOrderTab === 'all' ? '还没有订单，快去首页淘好物吧' : '该状态下暂无订单'}
+        <div style="margin-top:16px;"><button class="full-btn" style="width:160px;margin:0 auto;" onclick="switchPage('home')">去首页逛逛</button></div>
+      </div>`;
+      return;
+    }
+    box.innerHTML = list.map(o => {
+      let acts = '';
+      if (o.status === 'unshipped') {
+        acts = `<button class="order-act-btn" onclick="cancelOrder('${o.orderNo}')">取消订单</button>
+                <button class="order-act-btn primary" onclick="remindShip('${o.orderNo}')">提醒发货</button>`;
+      } else if (o.status === 'shipped') {
+        acts = `<button class="order-act-btn" onclick="viewLogistics('${o.orderNo}')">查看物流</button>
+                <button class="order-act-btn primary" onclick="confirmReceive('${o.orderNo}')">确认收货</button>`;
+      } else if (o.status === 'done') {
+        acts = `<button class="order-act-btn" onclick="openDetail(${o.productId})">再次购买</button>
+                <button class="order-act-btn primary" onclick="rateOrder('${o.orderNo}')">${o.rated?'查看评价':'评价订单'}</button>`;
+      } else {
+        acts = `<button class="order-act-btn" onclick="deleteOrder('${o.orderNo}')">删除订单</button>
+                <button class="order-act-btn primary" onclick="openDetail(${o.productId})">再次购买</button>`;
+      }
+      return `
+      <div class="order-card">
+        <div class="order-card-head">
+          <span class="order-no">订单号：${o.orderNo}</span>
+          <span class="order-state state-${o.status}">${ORDER_STATE[o.status]}</span>
+        </div>
+        <div class="order-card-body" onclick="openOrderDetail('${o.orderNo}')">
+          <div class="order-thumb" style="background-image:url('${o.img}')"></div>
+          <div class="order-card-info">
+            <div class="order-card-title">${o.title}</div>
+            <div class="order-card-seller">卖家：${o.seller} · ${o.createTime}</div>
+          </div>
+          <div class="order-card-price"><small style="font-size:11px;">¥</small>${o.price}</div>
+        </div>
+        <div class="order-card-foot">
+          <span class="order-total-lbl">合计<span class="order-total-val">¥${o.price}</span></span>
+          <span class="order-actions">${acts}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  function findOrder(no) { return orders.find(o => o.orderNo === no); }
+  function cancelOrder(no) {
+    const o = findOrder(no); if (!o) return;
+    o.status = 'canceled'; o.cancelTime = nowStr();
+    const p = products.find(x => x.id === o.productId);
+    if (p && p.status === 'sold') p.status = 'online';
+    addNotification(`订单「${o.title}」已取消`, 'order');
+    showToast('订单已取消');
+    renderOrders(); renderProducts(); refreshProfileStats();
+  }
+  function remindShip(no) {
+    const o = findOrder(no); if (!o) return;
+    addNotification(`已提醒卖家尽快为订单「${o.title}」发货`, 'order');
+    showToast('📢 已提醒卖家发货');
+  }
+  function viewLogistics(no) {
+    const o = findOrder(no); if (!o) return;
+    openSheet(`
+      <div class="sheet-title">物流跟踪</div>
+      <div class="sheet-item"><div class="si-label">
+        <div style="font-weight:600;margin-bottom:4px;">${o.seller} 已发货 · 校园快递配送中</div>
+        <div style="font-size:12px;color:#6b7280;">运单号：YT${o.orderNo}</div>
+      </div></div>
+      <div class="sheet-item"><div class="si-label">
+        <div style="color:#1e73e8;font-weight:600;font-size:13px;">【运输中】 包裹已到达奉贤校区快递站</div>
+        <div style="font-size:11px;color:#9ca3af;margin-top:3px;">${o.shipTime || nowStr()}</div>
+      </div></div>
+      <div class="sheet-item"><div class="si-label">
+        <div style="font-size:13px;">【已揽收】 卖家已将包裹交予校园快递点</div>
+      </div></div>
+      <button class="sheet-btn plain" onclick="closeSheet()">关闭</button>`);
+  }
+  function confirmReceive(no) {
+    const o = findOrder(no); if (!o) return;
+    o.status = 'done'; o.doneTime = nowStr();
+    addNotification(`订单「${o.title}」已确认收货，交易完成`, 'order');
+    showToast('✅ 已确认收货');
+    renderOrders();
+    setTimeout(() => rateOrder(no), 500);
+  }
+  function deleteOrder(no) {
+    const i = orders.findIndex(o => o.orderNo === no);
+    if (i >= 0) orders.splice(i, 1);
+    showToast('订单已删除');
+    renderOrders(); refreshProfileStats();
+  }
+  function rateOrder(no) {
+    const o = findOrder(no); if (!o) return;
+    const stars = o.rating || 0;
+    const starHtml = [1,2,3,4,5].map(n => `<span class="s ${n<=stars?'active':''}" onclick="pickStar(this,${n})">★</span>`).join('');
+    openSheet(`
+      <div class="sheet-title">${o.rated ? '我的评价' : '评价订单'}</div>
+      <div style="text-align:center;margin:8px 0 4px;">
+        <div class="rating-stars" id="rateStars">${starHtml}</div>
+      </div>
+      <textarea id="rateText" class="form-input" rows="3" placeholder="说说这次交易的感受吧～" ${o.rated?'disabled':''}>${o.rateText||''}</textarea>
+      ${o.rated ? '<button class="sheet-btn plain" onclick="closeSheet()">关闭</button>'
+        : '<button class="sheet-btn primary" onclick="submitRate(\''+no+'\')">提交评价</button>'}`);
+  }
+  function pickStar(el, n) {
+    el.parentElement.querySelectorAll('.s').forEach((s,i) => s.classList.toggle('active', i < n));
+  }
+  function submitRate(no) {
+    const o = findOrder(no); if (!o) return;
+    const n = document.querySelectorAll('#rateStars .s.active').length;
+    if (!n) return showToast('请先选择星级');
+    o.rating = n; o.rateText = document.getElementById('rateText').value; o.rated = true;
+    addNotification(`评价已提交，感谢你的反馈`, 'system');
+    closeSheet(); renderOrders();
+    showToast('⭐ 评价成功');
+  }
+  function openOrderDetail(no) {
+    const o = findOrder(no); if (!o) return;
+    const addr = o.address;
+    const steps = [
+      { t:'提交订单', time:o.createTime, done:true },
+      { t:'卖家发货', time:o.shipTime || '', done:['shipped','done'].includes(o.status) },
+      { t:'确认收货', time:o.doneTime || '', done:o.status==='done' },
+    ];
+    openSub('订单详情', body => {
+      body.innerHTML = `
+      <div class="card-panel">
+        <div style="display:flex;gap:11px;">
+          <div class="order-thumb" style="width:58px;height:58px;background-image:url('${o.img}')"></div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13.5px;font-weight:600;">${o.title}</div>
+            <div style="font-size:11px;color:#9ca3af;margin-top:4px;">卖家：${o.seller}</div>
+            <div style="color:#ff4d4f;font-weight:700;margin-top:4px;">¥${o.price}</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-panel">
+        <div style="font-size:13px;font-weight:700;margin-bottom:9px;">收货信息</div>
+        <div style="font-size:13px;">${addr.name} · ${addr.phone}</div>
+        <div style="font-size:12px;color:#6b7280;margin-top:4px;line-height:1.6;">${addr.campus} ${addr.detail}</div>
+      </div>
+      <div class="card-panel">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">订单进度</div>
+        ${steps.map((s,i)=>`
+          <div style="display:flex;gap:11px;">
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="width:11px;height:11px;border-radius:50%;background:${s.done?'#7c3aed':'#d1d5db'};"></div>
+              ${i<steps.length-1?'<div style="flex:1;width:2px;background:#e5e7eb;margin:2px 0;"></div>':''}
+            </div>
+            <div style="padding-bottom:16px;">
+              <div style="font-size:13px;color:${s.done?'#111827':'#9ca3af'};font-weight:${s.done?'600':'400'};">${s.t}</div>
+              <div style="font-size:11px;color:#b6bcc6;margin-top:2px;">${s.done && s.time ? s.time : (s.done?'已完成':'待处理')}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="card-panel" style="font-size:12.5px;color:#6b7280;line-height:2;">
+        订单编号：${o.orderNo}<br>
+        下单时间：${o.createTime}<br>
+        支付方式：校园钱包（模拟）
+      </div>`;
+    });
+  }
+
+  // ============================================================
+  // 审核员工作台
+  // ============================================================
+  function renderAdminHome() {
+    const pending = products.filter(p=>p.status==='pending');
+    const online = products.filter(p=>p.status==='online' || !p.status);
+    const rejected = products.filter(p=>p.status==='rejected');
+    const d = new Date();
+    const todayPrefix = `${d.getMonth()+1}月${d.getDate()}日`;
+    const todayDone = auditLog.filter(a=>a.time.startsWith(todayPrefix)).length;
+    const week = ['日','一','二','三','四','五','六'][d.getDay()];
+    const dateEl = document.getElementById('admDate');
+    if (dateEl) dateEl.textContent = `今天是 ${d.getMonth()+1}月${d.getDate()}日 · 星期${week} · 加油审核！`;
+    document.getElementById('admOverview').innerHTML = [
+      { n:pending.length, l:'待审核', tab:'pending' },
+      { n:todayDone, l:'今日已处理', tab:'pending' },
+      { n:online.length, l:'已上架', tab:'online' },
+      { n:rejected.length, l:'已驳回', tab:'rejected' },
+    ].map(x=>`<div class="adm-overview-item" onclick="goAuditQueue('${x.tab}')">
+      <div class="adm-ov-num">${x.n}</div><div class="adm-ov-lbl">${x.l}</div></div>`).join('');
+    const pbox = document.getElementById('admPendingBox');
+    if (!pending.length) {
+      pbox.innerHTML = `<div class="empty-state" style="padding:24px;">🎉 太棒了，暂无待审核商品</div>`;
+    } else {
+      pbox.innerHTML = pending.slice(0,3).map(p=>`
+        <div class="adm-mini-card">
+          <div class="adm-mini-img" style="background-image:url('${p.img}')"></div>
+          <div class="adm-mini-info">
+            <div class="adm-mini-title">${p.title}</div>
+            <div class="adm-mini-sub">${p.seller} · ¥${p.price} · ${p.submitTime||'刚刚'}</div>
+          </div>
+          <div class="adm-mini-btns">
+            <button class="mini-btn ok" onclick="approveProduct(${p.id})">通过</button>
+            <button class="mini-btn no" onclick="rejectProduct(${p.id})">驳回</button>
+          </div>
+        </div>`).join('');
+    }
+    document.getElementById('admActivityBox').innerHTML = auditLog.slice(0,6).map(a=>`
+      <div class="activity-item">
+        <div class="activity-dot" style="background:${a.action==='approve'?'#10b981':'#ef4444'};"></div>
+        <div>
+          <div class="activity-text">${a.action==='approve'?'审核通过了':'审核驳回了'}「${a.title}」</div>
+          <div class="activity-time">${a.time}</div>
+        </div>
+      </div>`).join('');
+  }
+  function goAuditQueue(tab) {
+    admCurrentTab = tab;
+    renderAdmin();
+    document.querySelectorAll('.adm-tab').forEach(t => {
+      t.classList.toggle('active', t.getAttribute('onclick').includes("'"+tab+"'"));
+    });
+    switchPage('admin');
+  }
+
+  // ============================================================
+  // 通用子页面 / 底部弹层 / 大图
+  // ============================================================
+  function openSub(title, fn) {
+    document.getElementById('subTitle').textContent = title;
+    fn(document.getElementById('subBody'));
+    document.getElementById('subMask').classList.add('show');
+  }
+  function closeSub() {
+    document.getElementById('subMask').classList.remove('show');
+  }
+  function openSheet(html) {
+    document.getElementById('sheetBody').innerHTML = html;
+    document.getElementById('sheetMask').classList.add('show');
+  }
+  function closeSheet() {
+    document.getElementById('sheetMask').classList.remove('show');
+  }
+  function viewImg(src) {
+    document.getElementById('imgViewerImg').src = src;
+    document.getElementById('imgViewer').classList.add('show');
+  }
+  function closeImgViewer() {
+    document.getElementById('imgViewer').classList.remove('show');
+  }
+
+  // ============================================================
+  // 帖子评论
+  // ============================================================
+  function getComments(idx) {
+    if (!postComments[idx]) {
+      postComments[idx] = defaultComments.map(c => Object.assign({ avatar: commentAvatar }, c));
+    }
+    return postComments[idx];
+  }
+  function openComments(idx) {
+    const list = getComments(idx);
+    openSheet(`
+      <div class="sheet-title">全部评论 · ${list.length}</div>
+      <div id="cmtList">
+        ${list.map(c=>`<div class="comment-item">
+          <img src="${c.avatar}" alt="" />
+          <div style="flex:1;">
+            <div class="comment-name">${c.name}</div>
+            <div class="comment-text">${c.text}</div>
+            <div class="comment-time">${c.time}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+      <div class="comment-input-row">
+        <input type="text" id="cmtInput" placeholder="友善发言，说点什么…" onkeydown="if(event.key==='Enter')sendComment(${idx})" />
+        <button onclick="sendComment(${idx})">发送</button>
+      </div>`);
+    setTimeout(()=>{ const i=document.getElementById('cmtInput'); if(i) i.focus(); }, 300);
+  }
+  function sendComment(idx) {
+    const input = document.getElementById('cmtInput');
+    const txt = input.value.trim();
+    if (!txt) return;
+    getComments(idx).push({ name: profile.name, avatar: profile.avatar, text: txt, time:'刚刚' });
+    posts[idx].comments++;
+    openComments(idx);
+    renderDiscover();
+  }
+
+  // ============================================================
+  // 我的发布
+  // ============================================================
+  function productStatusBadge(p) {
+    switch (p.status) {
+      case 'pending':  return '<span class="ts-badge ts-pending">审核中</span>';
+      case 'rejected': return '<span class="ts-badge ts-rejected">已驳回</span>';
+      case 'sold':     return '<span class="ts-badge ts-sold">已售出</span>';
+      case 'offline':  return '<span class="ts-badge ts-sold">已下架</span>';
+      default:         return '<span class="ts-badge ts-online">售卖中</span>';
+    }
+  }
+  function openMyPublish() {
+    openSub('我的发布', body => {
+      const list = products.filter(p => p.seller === profile.name);
+      if (!list.length) {
+        body.innerHTML = `<div class="empty-state"><div class="es-icon">📝</div>
+          还没有发布过闲置物品<div style="margin-top:14px;">
+          <button class="full-btn" style="width:160px;margin:0 auto;" onclick="closeSub();switchPage('publish')">去发布</button></div></div>`;
+        return;
+      }
+      body.innerHTML = `<div style="font-size:12px;color:#9ca3af;margin-bottom:10px;">共 ${list.length} 件发布</div>` +
+        list.map(p => {
+          let acts = '';
+          if (!p.status || p.status === 'online') {
+            acts = `<button class="order-act-btn" onclick="openDetail(${p.id})">查看</button>
+                    <button class="order-act-btn" onclick="setProductStatus(${p.id},'offline')">下架</button>`;
+          } else if (p.status === 'pending') {
+            acts = `<button class="order-act-btn" onclick="withdrawProduct(${p.id})">撤回</button>`;
+          } else if (p.status === 'rejected') {
+            acts = `<button class="order-act-btn" onclick="viewRejectReason(${p.id})">原因</button>
+                    <button class="order-act-btn primary" onclick="resubmitProduct(${p.id})">重新发布</button>`;
+          } else if (p.status === 'offline') {
+            acts = `<button class="order-act-btn primary" onclick="setProductStatus(${p.id},'online')">重新上架</button>`;
+          } else {
+            acts = `<button class="order-act-btn" onclick="openDetail(${p.id})">查看</button>`;
+          }
+          return `<div class="order-card">
+            <div class="order-card-head"><span>${productStatusBadge(p)}</span>
+              <span style="color:#9ca3af;font-size:11px;">${p.submitTime ? '提交于 '+p.submitTime : ''}</span></div>
+            <div class="order-card-body">
+              <div class="order-thumb" style="background-image:url('${p.img}')"></div>
+              <div class="order-card-info">
+                <div class="order-card-title">${p.title}</div>
+                <div class="order-card-seller">${p.cat} · ${p.location} · ${p.views}次浏览</div>
+              </div>
+              <div class="order-card-price"><small style="font-size:11px;">¥</small>${p.price}</div>
+            </div>
+            <div class="order-card-foot" style="justify-content:flex-end;">
+              <span class="order-actions">${acts}</span>
+            </div>
+          </div>`;
+        }).join('');
+    });
+  }
+  function setProductStatus(id, st) {
+    const p = products.find(x=>x.id===id); if (!p) return;
+    p.status = st;
+    closeSub(); renderProducts(); refreshProfileStats();
+    showToast(st === 'online' ? '✅ 已重新上架' : '商品已下架');
+  }
+  function withdrawProduct(id) {
+    const i = products.findIndex(x=>x.id===id);
+    if (i>=0) products.splice(i,1);
+    closeSub(); refreshProfileStats();
+    showToast('已撤回该发布');
+  }
+  function viewRejectReason(id) {
+    const p = products.find(x=>x.id===id); if (!p) return;
+    openSheet(`<div class="sheet-title">驳回原因</div>
+      <div style="background:#fef2f2;border-radius:11px;padding:13px;font-size:13px;color:#b91c1c;line-height:1.7;">
+        ${p.rejectReason || '商品信息不完整，请修改后重新发布'}</div>
+      <div style="font-size:11.5px;color:#9ca3af;margin-top:9px;">审核时间：${p.auditTime||'刚刚'}</div>
+      <button class="sheet-btn primary" onclick="closeSheet();resubmitProduct(${id})">修改后重新发布</button>
+      <button class="sheet-btn plain" onclick="closeSheet()">我知道了</button>`);
+  }
+  function resubmitProduct(id) {
+    const p = products.find(x=>x.id===id); if (!p) return;
+    closeSub();
+    uploadImgs = [p.img]; renderUploadGrid();
+    document.getElementById('pTitle').value = p.title;
+    document.getElementById('pPrice').value = p.price;
+    document.getElementById('pDesc').value = p.desc || '';
+    updateNameCounter();
+    document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', c.textContent===p.cat));
+    switchPage('publish');
+    showToast('已填入原信息，修改后提交即可');
+  }
+
+  // ============================================================
+  // 我的收藏
+  // ============================================================
+  function openMyFavorites() {
+    openSub('我的收藏', body => {
+      const list = favoriteIds.map(id => products.find(p=>p.id===id)).filter(Boolean);
+      if (!list.length) {
+        body.innerHTML = `<div class="empty-state"><div class="es-icon">💛</div>
+          还没有收藏商品，看到喜欢的点个小心心吧</div>`;
+        return;
+      }
+      body.innerHTML = list.map(p => `
+        <div class="order-card" onclick="closeSub();openDetail(${p.id})">
+          <div class="order-card-body">
+            <div class="order-thumb" style="background-image:url('${p.img}')"></div>
+            <div class="order-card-info">
+              <div class="order-card-title">${p.title}</div>
+              <div class="order-card-seller">${p.seller} · ${p.location}</div>
+            </div>
+            <div class="order-card-price"><small style="font-size:11px;">¥</small>${p.price}</div>
+          </div>
+          <div class="order-card-foot" style="justify-content:flex-end;">
+            <span class="order-actions"><button class="order-act-btn"
+              onclick="event.stopPropagation();toggleFav(${p.id},null);openMyFavorites()">取消收藏</button></span>
+          </div>
+        </div>`).join('');
+    });
+  }
+
+  // ============================================================
+  // 浏览记录
+  // ============================================================
+  function openViewHistory() {
+    openSub('浏览记录', body => {
+      if (!viewedProducts.length) {
+        body.innerHTML = `<div class="empty-state"><div class="es-icon">🕐</div>还没有浏览记录</div>`;
+        return;
+      }
+      body.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <span style="font-size:12px;color:#9ca3af;">共 ${viewedProducts.length} 条记录</span>
+          <span style="font-size:12px;color:#ef4444;" onclick="clearViewHistory()">清空</span>
+        </div>` + viewedProducts.map(v => {
+          const p = products.find(x=>x.id===v.id);
+          if (!p) return '';
+          return `<div class="order-card">
+            <div class="order-card-body" onclick="closeSub();openDetail(${p.id})">
+              <div class="order-thumb" style="background-image:url('${p.img}')"></div>
+              <div class="order-card-info">
+                <div class="order-card-title">${p.title}</div>
+                <div class="order-card-seller">浏览于 ${v.time}</div>
+              </div>
+              <div class="order-card-price"><small style="font-size:11px;">¥</small>${p.price}</div>
+            </div>
+            <div class="order-card-foot" style="justify-content:flex-end;">
+              <span class="order-actions"><button class="order-act-btn"
+                onclick="removeView(${p.id})">删除</button></span>
+            </div>
+          </div>`;
+        }).join('');
+    });
+  }
+  function removeView(id) {
+    const i = viewedProducts.findIndex(v=>v.id===id);
+    if (i>=0) viewedProducts.splice(i,1);
+    refreshProfileStats(); openViewHistory();
+  }
+  function clearViewHistory() {
+    viewedProducts = [];
+    refreshProfileStats();
+    openSub('浏览记录', body => {
+      body.innerHTML = `<div class="empty-state"><div class="es-icon">🕐</div>浏览记录已清空</div>`;
+    });
+  }
+
+  // ============================================================
+  // 收货地址
+  // ============================================================
+  function openAddresses() {
+    openSub('收货地址', body => {
+      body.innerHTML = addresses.map(a => `
+        <div class="card-panel">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span style="font-size:14px;font-weight:700;">${a.name}</span>
+            <span style="font-size:12px;color:#6b7280;">${a.phone}</span>
+            ${a.isDefault ? '<span class="ts-badge" style="background:#ede9fe;color:#7c3aed;">默认</span>' : ''}
+          </div>
+          <div style="font-size:12.5px;color:#6b7280;margin-top:7px;line-height:1.6;">
+            ${a.campus} ${a.detail}</div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;">
+            ${a.isDefault ? '' : `<button class="order-act-btn" onclick="setDefaultAddr(${a.id})">设为默认</button>`}
+            <button class="order-act-btn" onclick="editAddress(${a.id})">编辑</button>
+            <button class="order-act-btn" style="color:#ef4444;" onclick="deleteAddress(${a.id})">删除</button>
+          </div>
+        </div>`).join('') +
+        `<button class="full-btn" onclick="editAddress(null)">+ 新增收货地址</button>`;
+    });
+  }
+  function addressForm(a) {
+    return `
+      <div class="form-row">
+        <label class="form-label">收货人</label>
+        <input class="form-input" id="afName" value="${a?a.name:''}" placeholder="请输入收货人姓名" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">手机号</label>
+        <input class="form-input" id="afPhone" value="${a?a.phone:''}" placeholder="请输入手机号" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">所在校区</label>
+        <div class="choice-row" id="afCampus">
+          ${['奉贤校区','徐汇校区','国权路校区'].map(c =>
+            `<span class="choice-chip ${a&&a.campus===c?'active':''}" onclick="this.parentNode.querySelectorAll('.choice-chip').forEach(x=>x.classList.remove('active'));this.classList.add('active')">${c}</span>`).join('')}
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">详细地址</label>
+        <textarea class="form-input" id="afDetail" rows="2" placeholder="宿舍楼/房间号或快递代收点">${a?a.detail:''}</textarea>
+      </div>
+      <button class="full-btn purple" onclick="saveAddress(${a?a.id:'null'})">保存地址</button>`;
+  }
+  function editAddress(id) {
+    const a = id ? addresses.find(x=>x.id===id) : null;
+    openSub(id ? '编辑地址' : '新增地址', body => body.innerHTML = addressForm(a));
+  }
+  function saveAddress(id) {
+    const name = document.getElementById('afName').value.trim();
+    const phone = document.getElementById('afPhone').value.trim();
+    const campus = document.querySelector('#afCampus .choice-chip.active');
+    const detail = document.getElementById('afDetail').value.trim();
+    if (!name) return showToast('请填写收货人');
+    if (!/^1\d{10}$/.test(phone.replace(/\*/g,'0'))) return showToast('请填写正确的手机号');
+    if (!campus) return showToast('请选择校区');
+    if (!detail) return showToast('请填写详细地址');
+    if (id) {
+      const a = addresses.find(x=>x.id===id);
+      Object.assign(a, { name, phone, campus:campus.textContent, detail });
+    } else {
+      addresses.push({ id: Date.now(), name, phone, campus:campus.textContent, detail, isDefault:!addresses.length });
+    }
+    updateAddrCount();
+    showToast('✅ 地址已保存');
+    openAddresses();
+  }
+  function deleteAddress(id) {
+    const i = addresses.findIndex(a=>a.id===id);
+    if (i>=0) addresses.splice(i,1);
+    if (addresses.length && !addresses.some(a=>a.isDefault)) addresses[0].isDefault = true;
+    updateAddrCount();
+    openAddresses();
+  }
+  function setDefaultAddr(id) {
+    addresses.forEach(a=>a.isDefault = a.id===id);
+    showToast('已设为默认地址');
+    openAddresses();
+  }
+  function updateAddrCount() {
+    const el = document.getElementById('addrCountText');
+    if (el) el.textContent = addresses.length + '个地址';
+  }
+
+  // ============================================================
+  // 帮助与反馈
+  // ============================================================
+  const FAQ = [
+    { q:'如何发布闲置物品？', a:'点击底部「发布」按钮，上传商品图片、填写名称、价格和描述后提交。商品需经审核员审核通过后才会在首页展示。' },
+    { q:'购买后多久能收到货？', a:'面交商品可与卖家约定时间地点；需要邮寄的商品，卖家一般会在24小时内发货，校内快递通常1-2天送达。可在「我的订单」查看物流。' },
+    { q:'商品与描述不符怎么办？', a:'请在确认收货前联系卖家协商，也可以在订单详情中申请平台介入。已完成的订单可在7天内通过「帮助与反馈」提交售后申请。' },
+    { q:'哪些商品不能发布？', a:'违禁品、食品、虚拟账号、高仿假货、易燃易爆物品等均不允许发布，具体可查看《用户协议》。违规商品将被审核员驳回。' },
+    { q:'如何修改或下架商品？', a:'进入「我的-我的发布」，可对在售商品进行下架、重新上架，被驳回的商品可查看原因并修改后重新发布。' },
+  ];
+  function openHelp() {
+    openSub('帮助与反馈', body => {
+      body.innerHTML = `
+        <div class="card-panel" style="background:linear-gradient(135deg,#eef2ff,#faf5ff);">
+          <div style="font-size:14px;font-weight:700;">需要人工帮助？</div>
+          <div style="font-size:12px;color:#6b7280;margin-top:6px;line-height:1.8;">
+            客服 QQ 群：81234567<br>服务时间：工作日 9:00-21:00</div>
+        </div>
+        <div style="font-size:13px;font-weight:700;margin:4px 0 9px;">常见问题</div>
+        ${FAQ.map((f,i)=>`
+          <div class="faq-item">
+            <div class="faq-q" onclick="this.parentNode.classList.toggle('open')">
+              <span>${f.q}</span><span class="faq-arrow">⌄</span></div>
+            <div class="faq-a">${f.a}</div>
+          </div>`).join('')}
+        <div style="font-size:13px;font-weight:700;margin:16px 0 9px;">意见反馈</div>
+        <div class="card-panel">
+          <div class="choice-row" id="fbType">
+            ${['功能建议','商品举报','交易纠纷','其他'].map((t,i)=>
+              `<span class="choice-chip ${i===0?'active':''}" onclick="this.parentNode.querySelectorAll('.choice-chip').forEach(x=>x.classList.remove('active'));this.classList.add('active')">${t}</span>`).join('')}
+          </div>
+          <textarea id="fbText" class="form-input" rows="3" placeholder="请详细描述你遇到的问题或建议…" style="margin-top:12px;"></textarea>
+          <button class="full-btn purple" style="margin-top:12px;" onclick="submitFeedback()">提交反馈</button>
+        </div>`;
+    });
+  }
+  function submitFeedback() {
+    const txt = document.getElementById('fbText').value.trim();
+    if (!txt) return showToast('请填写反馈内容');
+    const type = document.querySelector('#fbType .choice-chip.active').textContent;
+    addNotification(`你的${type}已收到，我们会尽快处理（工单编号 ST${Date.now().toString().slice(-6)}）`, 'system');
+    showToast('✅ 反馈已提交，感谢你！');
+    closeSub();
+  }
+
+  // ============================================================
+  // 资料编辑
+  // ============================================================
+  function openEditProfile() {
+    openSub('编辑资料', body => {
+      body.innerHTML = `
+        <div class="card-panel" style="display:flex;align-items:center;gap:13px;" onclick="openChangeAvatar()">
+          <img src="${profile.avatar}" style="width:52px;height:52px;border-radius:50%;" alt="" />
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;">点击更换头像</div>
+            <div style="font-size:11.5px;color:#9ca3af;margin-top:3px;">支持选择预设头像</div>
+          </div>
+          <span style="color:#c7c9cf;">›</span>
+        </div>
+        <div class="card-panel">
+          <div class="form-row">
+            <label class="form-label">昵称</label>
+            <input class="form-input" id="epName" value="${profile.name}" maxlength="12" />
+          </div>
+          <div class="form-row" style="margin-bottom:0;">
+            <label class="form-label">个人简介</label>
+            <textarea class="form-input" id="epBio" rows="3" maxlength="60">${profile.bio}</textarea>
+          </div>
+        </div>
+        <button class="full-btn" onclick="saveEditProfile()">保存</button>`;
+    });
+  }
+  function saveEditProfile() {
+    const name = document.getElementById('epName').value.trim();
+    const bio = document.getElementById('epBio').value.trim();
+    if (!name) return showToast('昵称不能为空');
+    profile.name = name; profile.bio = bio;
+    refreshProfileRole();
+    closeSub();
+    showToast('✅ 资料已保存');
+  }
+  function openChangeAvatar() {
+    const seeds = [
+      'portrait%20young%20asian%20female%20college%20student%20smiling%20headshot',
+      'portrait%20young%20asian%20male%20college%20student%20glasses%20headshot',
+      'portrait%20young%20asian%20girl%20student%20short%20hair%20headshot',
+      'portrait%20young%20asian%20boy%20student%20hoodie%20headshot',
+      'cute%20cartoon%20cat%20avatar%20illustration%20minimal',
+      'cute%20cartoon%20shiba%20dog%20avatar%20illustration'
+    ];
+    const list = seeds.map(s=>`https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=${s}&image_size=square`);
+    openSheet(`<div class="sheet-title">选择头像</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:6px 0 10px;">
+        ${list.map(src=>`<img src="${src}" onclick="chooseAvatar('${src}')"
+          style="width:100%;border-radius:50%;${src===profile.avatar?'box-shadow:0 0 0 3px #7c3aed;':''}" alt="" />`).join('')}
+      </div>
+      <button class="sheet-btn plain" onclick="closeSheet()">取消</button>`);
+  }
+  function chooseAvatar(src) {
+    profile.avatar = src;
+    ['.profile-avatar img', '.acct-avatar img', '.acct-mini-avatar'].forEach(sel => {
+      document.querySelectorAll(sel).forEach(img => img.src = src);
+    });
+    refreshProfileRole();
+    closeSheet();
+    showToast('✅ 头像已更换');
+    if (document.getElementById('subMask').classList.contains('show')) openEditProfile();
+  }
+  function openEditName() {
+    openSub('修改昵称', body => {
+      body.innerHTML = `<div class="card-panel">
+        <input class="form-input" id="nmInput" value="${profile.name}" maxlength="12" />
+        <div style="font-size:11px;color:#9ca3af;margin-top:8px;">昵称 2-12 个字符，30天内可修改一次</div>
+      </div>
+      <button class="full-btn" onclick="saveName()">保存</button>`;
+    });
+  }
+  function saveName() {
+    const v = document.getElementById('nmInput').value.trim();
+    if (v.length < 2) return showToast('昵称至少2个字符');
+    profile.name = v;
+    refreshProfileRole();
+    closeSub();
+    showToast('✅ 昵称已修改');
+  }
+  function openChangePassword() {
+    openSub('修改密码', body => {
+      body.innerHTML = `<div class="card-panel">
+        <div class="form-row"><label class="form-label">当前密码</label>
+          <input type="password" class="form-input" id="pwOld" placeholder="请输入当前密码" /></div>
+        <div class="form-row"><label class="form-label">新密码</label>
+          <input type="password" class="form-input" id="pwNew" placeholder="6-20位，建议字母+数字" /></div>
+        <div class="form-row" style="margin-bottom:0;"><label class="form-label">确认新密码</label>
+          <input type="password" class="form-input" id="pwNew2" placeholder="再次输入新密码" /></div>
+      </div>
+      <button class="full-btn" onclick="savePassword()">确认修改</button>`;
+    });
+  }
+  function savePassword() {
+    const oldp = document.getElementById('pwOld').value;
+    const p1 = document.getElementById('pwNew').value;
+    const p2 = document.getElementById('pwNew2').value;
+    if (!oldp) return showToast('请输入当前密码');
+    if (p1.length < 6) return showToast('新密码至少6位');
+    if (p1 !== p2) return showToast('两次输入不一致');
+    closeSub();
+    showToast('✅ 密码修改成功');
+  }
+
+  // ============================================================
+  // 通知 / 隐私 / 消息设置
+  // ============================================================
+  function sw(key) {
+    return `<button class="mini-switch ${settings[key]?'on':''}" onclick="toggleSetting('${key}',this)">
+      <span class="k"></span></button>`;
+  }
+  function toggleSetting(key, el) {
+    settings[key] = !settings[key];
+    el.classList.toggle('on', settings[key]);
+  }
+  function settingRow(ic, color, title, sub, key) {
+    return `<div class="card-panel" style="display:flex;align-items:center;gap:11px;margin-bottom:9px;padding:12px 14px;">
+      <div style="width:32px;height:32px;border-radius:9px;background:${color};display:flex;align-items:center;justify-content:center;flex-shrink:0;">${ic}</div>
+      <div style="flex:1;"><div style="font-size:13.5px;font-weight:600;">${title}</div>
+        <div style="font-size:11px;color:#9ca3af;margin-top:2px;">${sub}</div></div>
+      ${sw(key)}</div>`;
+  }
+  function openNotifSettings() {
+    openSub('消息通知', body => {
+      body.innerHTML =
+        settingRow('🔔','#dbeafe','交易消息','订单状态、议价、发货提醒','trade') +
+        settingRow('📢','#f3e8ff','系统公告','平台活动与通知推送','system') +
+        settingRow('❤️','#fee2e2','点赞与收藏','帖子被点赞或收藏时提醒','like') +
+        settingRow('💬','#dcfce7','评论与@','收到评论或@时提醒','comment') +
+        `<div style="font-size:11px;color:#9ca3af;padding:6px 4px;">关闭后仍可在「消息」页手动查看全部消息</div>`;
+    });
+  }
+  function openPrivacy() {
+    openSub('隐私设置', body => {
+      body.innerHTML =
+        settingRow('🟢','#dcfce7','显示在线状态','其他用户可看到你是否在线','showOnline') +
+        settingRow('✉️','#dbeafe','允许陌生人私信','关闭后仅同校认证用户可联系你','allowStranger') +
+       `<div class="card-panel" style="margin-top:4px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;"
+            onclick="showToast('当前缓存 12.6 MB，已为你清理')">
+            <span>清除缓存</span><span style="color:#9ca3af;font-size:12px;">12.6 MB ›</span></div>
+          <div style="height:1px;background:#f3f4f6;margin:12px 0;"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;"
+            onclick="openDoc('第三方信息共享清单')">
+            <span>第三方信息共享清单</span><span style="color:#c7c9cf;">›</span></div>
+          <div style="height:1px;background:#f3f4f6;margin:12px 0;"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;color:#ef4444;"
+            onclick="confirmCancelAccount()">
+            <span>注销账号</span><span>›</span></div>
+        </div>`;
+    });
+  }
+  function confirmCancelAccount() {
+    openSheet(`<div class="sheet-title">注销账号</div>
+      <div style="font-size:13px;color:#4b5563;line-height:1.8;padding:4px 2px;">
+        注销后账号信息、订单记录将被清空且无法恢复。确定继续吗？</div>
+      <button class="sheet-btn danger" onclick="closeSheet();showToast('演示环境：注销申请已取消')">确认注销</button>
+      <button class="sheet-btn plain" onclick="closeSheet()">我再想想</button>`);
+  }
+  function openMsgSettings() {
+    openSheet(`<div class="sheet-title">消息设置</div>
+      <div class="sheet-item" onclick="closeSheet();openNotifSettings()">
+        <span class="si-label">通知与免提醒</span><span>›</span></div>
+      <div class="sheet-item" onclick="closeSheet();openPrivacy()">
+        <span class="si-label">隐私与私信权限</span><span>›</span></div>
+      <div class="sheet-item" onclick="confirmClearChats()">
+        <span class="si-label" style="color:#ef4444;">清空全部聊天记录</span><span>›</span></div>
+      <button class="sheet-btn plain" onclick="closeSheet()">取消</button>`);
+  }
+  function confirmClearChats() {
+    openSheet(`<div class="sheet-title">清空聊天记录</div>
+      <div style="font-size:13px;color:#4b5563;padding:4px 2px 8px;">清空后所有会话消息将无法恢复，确定清空吗？</div>
+      <button class="sheet-btn danger" onclick="closeSheet();showToast('聊天记录已清空')">确认清空</button>
+      <button class="sheet-btn plain" onclick="closeSheet()">取消</button>`);
+  }
+
+  // ============================================================
+  // 版本信息 / 协议文档
+  // ============================================================
+  function openVersion() {
+    openSub('关于上商淘', body => {
+      body.innerHTML = `
+        <div style="text-align:center;padding:22px 0 14px;">
+          <img src="logo.png" style="width:70px;height:70px;border-radius:18px;" alt="logo"
+            onerror="this.src='https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=app%20icon%20blue%20shopping%20bag%20minimal%20logo&image_size=square'" />
+          <div style="font-size:16px;font-weight:700;margin-top:11px;">上商淘</div>
+          <div style="font-size:12px;color:#9ca3af;margin-top:4px;">Version 2.3.1</div>
+        </div>
+        <div class="card-panel">
+          <div style="font-size:13.5px;font-weight:700;margin-bottom:8px;">更新日志</div>
+          <div style="font-size:12.5px;color:#4b5563;line-height:1.9;">
+            · 全新审核员工作台，审核效率翻倍<br>
+            · 我的订单支持物流跟踪与评价<br>
+            · 优化首页筛选与商品搜索体验<br>
+            · 修复已知问题，提升稳定性</div>
+        </div>
+        <button class="full-btn" onclick="showToast('当前已是最新版本')">检查更新</button>
+        <div style="text-align:center;font-size:11px;color:#b6bcc6;margin-top:14px;line-height:1.8;">
+          上海商学院校园二手交易平台<br>黑客松参赛作品 · Made with ❤️</div>`;
+    });
+  }
+  const DOCS = {
+    '用户协议': [
+      ['一、服务说明', '上商淘是面向上海商学院在校师生的校园二手物品交易信息平台。平台仅提供信息发布与交易辅助服务，交易双方应遵守诚实信用原则。'],
+      ['二、用户义务', '用户应使用真实校园身份注册，不得发布法律法规及平台规则禁止的商品，包括但不限于：违禁品、假冒商品、食品药品、虚拟账号、论文代写等。'],
+      ['三、商品审核', '用户发布的商品需经平台审核员审核通过后方可展示。审核通常在24小时内完成，被驳回的商品可在修改后重新提交。'],
+      ['四、交易规范', '买卖双方应按约定完成交易。面交建议选择校内公共场所；邮寄交易请保留物流凭证。发生纠纷可申请平台介入。'],
+      ['五、其他', '本协议最终解释权归上商淘团队所有，平台有权根据运营需要更新本协议内容。'],
+    ],
+    '隐私政策': [
+      ['一、信息收集', '为完成校园身份认证，我们会收集你的手机号、学号（选填）及你主动发布的商品信息。我们不会收集与服务无关的个人信息。'],
+      ['二、信息使用', '你的信息仅用于身份验证、交易沟通、订单处理与安全风控。未经你的同意，我们不会向第三方出售你的个人信息。'],
+      ['三、信息存储', '你的数据存储于安全的服务器中，我们采用加密传输与访问控制等措施保障信息安全。'],
+      ['四、你的权利', '你可以随时查看、修改个人资料，管理消息通知与隐私设置，也可以申请注销账号并删除个人数据。'],
+    ],
+    '第三方信息共享清单': [
+      ['共享说明', '为实现登录验证、图片存储与消息推送，我们使用了短信服务、对象存储与云服务器等基础能力。相关服务商仅在必要范围内处理数据并承担保密义务。'],
+      ['联系方式', '如对个人信息处理有任何疑问，可通过「帮助与反馈」与我们联系。'],
+    ]
+  };
+  function openDoc(title) {
+    const doc = DOCS[title] || [['说明','文档建设中']];
+    openSub(title, body => {
+      body.innerHTML = `<div class="card-panel"><div class="doc-body">
+        <p style="color:#9ca3af;font-size:12px;">更新日期：2026年6月 · 生效中</p>
+        ${doc.map(([h,p])=>`<h3>${h}</h3><p>${p}</p>`).join('')}
+      </div></div>`;
+    });
+  }
+
+  // ============================================================
+  // 高级筛选 / 全部分类
+  // ============================================================
+  function openFilterSheet() {
+    const cats = [null,'教材','服饰','数码','生活'];
+    const sorts = [['all','综合'],['new','最新'],['price','价格'],['near','离我最近']];
+    const priceChips = [
+      { l:'不限', min:null, max:null },
+      { l:'¥50以下', min:null, max:50 },
+      { l:'¥50-200', min:50, max:200 },
+      { l:'¥200以上', min:200, max:null },
+    ];
+    const priceActive = filterState.minPrice===null && filterState.maxPrice===null ? 0
+      : filterState.maxPrice===50 ? 1 : filterState.minPrice===50 ? 2 : 3;
+    openSheet(`
+      <div class="sheet-title">筛选商品</div>
+      <div style="font-size:12.5px;font-weight:600;margin:4px 0 8px;">商品分类</div>
+      <div class="choice-row" id="flCat">
+        ${cats.map(c=>`<span class="choice-chip ${currentCat===c?'active':''}"
+          onclick="this.parentNode.querySelectorAll('.choice-chip').forEach(x=>x.classList.remove('active'));this.classList.add('active')"
+          data-cat="${c||''}">${c||'全部'}</span>`).join('')}
+      </div>
+      <div style="font-size:12.5px;font-weight:600;margin:14px 0 8px;">价格区间</div>
+      <div class="choice-row" id="flPrice">
+        ${priceChips.map((p,i)=>`<span class="choice-chip ${i===priceActive?'active':''}"
+          onclick="pickPriceChip(this,${p.min===null?'null':p.min},${p.max===null?'null':p.max})">${p.l}</span>`).join('')}
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <input class="form-input" id="flMin" type="number" placeholder="最低价" value="${filterState.minPrice===null?'':filterState.minPrice}" />
+        <input class="form-input" id="flMax" type="number" placeholder="最高价" value="${filterState.maxPrice===null?'':filterState.maxPrice}" />
+      </div>
+      <div style="font-size:12.5px;font-weight:600;margin:14px 0 8px;">排序方式</div>
+      <div class="choice-row" id="flSort">
+        ${sorts.map(([v,l])=>`<span class="choice-chip ${currentSort===v?'active':''}"
+          onclick="this.parentNode.querySelectorAll('.choice-chip').forEach(x=>x.classList.remove('active'));this.classList.add('active')"
+          data-sort="${v}">${l}</span>`).join('')}
+      </div>
+      <button class="sheet-btn plain" onclick="resetFilter()">重置筛选</button>
+      <button class="sheet-btn primary" onclick="applyFilter()">查看结果</button>`);
+  }
+  function pickPriceChip(el, min, max) {
+    el.parentNode.querySelectorAll('.choice-chip').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('flMin').value = min===null?'':min;
+    document.getElementById('flMax').value = max===null?'':max;
+  }
+  function applyFilter() {
+    const cat = document.querySelector('#flCat .choice-chip.active');
+    const sort = document.querySelector('#flSort .choice-chip.active');
+    const minv = document.getElementById('flMin').value;
+    const maxv = document.getElementById('flMax').value;
+    currentCat = cat && cat.dataset.cat ? cat.dataset.cat : null;
+    currentSort = sort ? sort.dataset.sort : 'all';
+    filterState.minPrice = minv === '' ? null : Number(minv);
+    filterState.maxPrice = maxv === '' ? null : Number(maxv);
+    if (filterState.minPrice !== null && filterState.maxPrice !== null && filterState.minPrice > filterState.maxPrice) {
+      return showToast('最低价不能高于最高价');
+    }
+    // 同步首页分类高亮
+    document.querySelectorAll('.cat-item').forEach(c => {
+      c.style.opacity = (!currentCat || c.dataset.cat === currentCat) ? '1' : '.4';
+    });
+    document.querySelectorAll('#filterTabs .tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.sort === currentSort);
+    });
+    closeSheet(); renderProducts();
+    showToast('筛选已应用');
+  }
+  function resetFilter() {
+    currentCat = null; currentSort = 'all';
+    filterState.minPrice = null; filterState.maxPrice = null;
+    document.getElementById('flMin').value = '';
+    document.getElementById('flMax').value = '';
+    document.querySelectorAll('#sheetMask .choice-chip').forEach((x,i)=>{
+      x.classList.remove('active');
+    });
+    const firsts = document.querySelectorAll('#flCat .choice-chip,#flPrice .choice-chip,#flSort .choice-chip');
+    document.querySelector('#flCat .choice-chip').classList.add('active');
+    document.querySelector('#flPrice .choice-chip').classList.add('active');
+    document.querySelector('#flSort .choice-chip').classList.add('active');
+    document.querySelectorAll('.cat-item').forEach(c=>c.style.opacity='1');
+    document.querySelectorAll('#filterTabs .tab').forEach(t=>t.classList.toggle('active', t.dataset.sort==='all'));
+    renderProducts();
+  }
+  function openAllCategories() {
+    const cats = [
+      ['教材教辅','📚'],['服饰鞋包','👕'],['数码电子','💻'],['生活用品','🧴'],
+      ['运动户外','⚽'],['美妆护肤','💄'],['乐器音响','🎸'],['其他闲置','📦']
+    ];
+    openSheet(`<div class="sheet-title">全部分类</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:6px 0;">
+        ${cats.map(([l,ic])=>`<div onclick="pickCategory('${l}')"
+          style="text-align:center;font-size:11px;color:#4b5563;">
+          <div style="width:46px;height:46px;border-radius:14px;background:#f3f4f6;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:21px;">${ic}</div>
+          ${l}</div>`).join('')}
+      </div>
+      <button class="sheet-btn plain" onclick="closeSheet()">取消</button>`);
+  }
+  function pickCategory(cat) {
+    // 映射到已有分类，无对应商品的分类给出空结果提示
+    const map = { '教材教辅':'教材','服饰鞋包':'服饰','数码电子':'数码','生活用品':'生活' };
+    currentCat = map[cat] || cat;
+    document.querySelectorAll('.cat-item').forEach(c => {
+      c.style.opacity = (!currentCat || c.dataset.cat === currentCat) ? '1' : '.4';
+    });
+    closeSheet(); renderProducts();
+    showToast('已进入：' + cat);
+  }
+
+  // ============================================================
+  // 帖子更多 / 分享 / Banner / 第三方登录
+  // ============================================================
+  function openPostMore(idx) {
+    openSheet(`<div class="sheet-title">更多操作</div>
+      <div class="sheet-item" onclick="closeSheet();showToast('已收藏该帖子')">
+        <span>⭐</span><span class="si-label">收藏帖子</span></div>
+      <div class="sheet-item" onclick="copyLink()">
+        <span>🔗</span><span class="si-label">复制链接</span></div>
+      <div class="sheet-item" onclick="closeSheet();showToast('已静音，不再接收该帖通知')">
+        <span>🔕</span><span class="si-label">消息免打扰</span></div>
+      <div class="sheet-item" onclick="closeSheet();showToast('将减少此类内容推荐')">
+        <span>🙈</span><span class="si-label">不感兴趣</span></div>
+      <div class="sheet-item" onclick="reportPost(${idx})" style="color:#ef4444;">
+        <span>🚩</span><span class="si-label">举报</span></div>
+      <button class="sheet-btn plain" onclick="closeSheet()">取消</button>`);
+  }
+  function copyLink() {
+    const link = location.origin + '/discover?post=' + Date.now();
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(link).then(()=>showToast('链接已复制')).catch(()=>showToast('链接已复制：'+link));
+    } else showToast('链接已复制');
+    closeSheet();
+  }
+  function reportPost(idx) {
+    const reasons = ['垃圾广告','色情低俗','虚假信息','违禁物品','人身攻击','其他'];
+    openSheet(`<div class="sheet-title">举报原因</div>
+      ${reasons.map(r=>`<div class="sheet-item"
+        onclick="closeSheet();showToast('举报已受理，我们会尽快核实处理')">
+        <span class="si-label">${r}</span><span style="color:#c7c9cf;">›</span></div>`).join('')}
+      <button class="sheet-btn plain" onclick="closeSheet()">取消</button>`);
+  }
+  function openShare(text) {
+    const targets = [
+      ['微信好友','💬','#07c160'],['朋友圈','🌐','#1aad19'],['QQ','🐧','#12b7f5'],
+      ['校园墙','🧱','#f59e0b'],['复制链接','🔗','#6b7280']
+    ];
+    openSheet(`<div class="sheet-title">分享到</div>
+      <div style="display:flex;gap:6px;overflow-x:auto;padding:8px 0 12px;">
+        ${targets.map(([l,ic,c])=>`<div onclick="doShare('${l}')"
+          style="flex-shrink:0;width:62px;text-align:center;font-size:11px;color:#4b5563;">
+          <div style="width:48px;height:48px;border-radius:50%;background:${c}1f;color:${c};margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:22px;">${ic}</div>${l}</div>`).join('')}
+      </div>
+      <div style="background:#f9fafb;border-radius:10px;padding:10px 12px;font-size:12px;color:#6b7280;max-height:70px;overflow:hidden;">${text}</div>
+      <button class="sheet-btn plain" onclick="closeSheet()">取消</button>`);
+  }
+  function doShare(t) {
+    closeSheet();
+    if (t === '复制链接') copyLink();
+    else showToast('✅ 已分享到' + t);
+  }
+  function openBanner(i) {
+    const data = [
+      { title:'春季焕新 · 毕业季好物流转', desc:'精选毕业生闲置好物，台灯、书架、收纳盒低至 3 折，校内面交更安心。', cat:null },
+      { title:'教材回收计划', desc:'高数、英语、考研真题专区，低价淘好书，让知识循环起来。', cat:'教材' },
+      { title:'潮流穿搭专场', desc:'学长学姐的品牌闲置，优衣库/Nike/ZARA 超低价格，尺码先到先得。', cat:'服饰' },
+    ][i];
+    openSheet(`<div class="sheet-title">${data.title}</div>
+      <div style="font-size:13px;color:#4b5563;line-height:1.8;padding:4px 0 10px;">${data.desc}</div>
+      <button class="sheet-btn primary" onclick="closeSheet();openBannerList('${data.cat||''}')">查看相关商品</button>
+      <button class="sheet-btn plain" onclick="closeSheet()">以后再说</button>`);
+  }
+  function openBannerList(cat) {
+    if (cat) {
+      currentCat = cat;
+      document.querySelectorAll('.cat-item').forEach(c => {
+        c.style.opacity = c.dataset.cat === cat ? '1' : '.4';
+      });
+    }
+    switchPage('home');
+  }
+  function thirdLogin(platform) {
+    openSheet(`<div class="sheet-title">${platform}快捷登录</div>
+      <div style="display:flex;flex-direction:column;align-items:center;padding:10px 0 14px;">
+        <div style="font-size:40px;">${platform==='微信'?'💬':platform==='QQ'?'🐧':'🎫'}</div>
+        <div style="font-size:13px;color:#4b5563;margin-top:10px;text-align:center;line-height:1.8;">
+          将使用 ${platform} 账号登录<br>并自动绑定你的上商校园身份</div>
+      </div>
+      <button class="sheet-btn primary" onclick="doThirdLogin()">授权并登录</button>
+      <button class="sheet-btn plain" onclick="closeSheet()">取消</button>`);
+  }
+  function doThirdLogin() {
+    selectRole('user');
+    closeSheet();
+    document.getElementById('loginMask').classList.add('hide');
+    renderProducts();
+    switchPage('home');
+    showToast('✅ 第三方登录成功');
   }
 
   // ===== Toast =====
@@ -3301,6 +4848,9 @@
   renderProducts();
   renderDiscover();
   renderMessages();
+  renderAdminHome();
+  refreshProfileStats();
+  updateNotificationBadge();
 </script>
 </body>
 </html>

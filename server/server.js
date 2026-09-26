@@ -25,7 +25,7 @@ const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || 3306,
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'root',
+  password: process.env.DB_PASSWORD || 'scalaspark',
   database: process.env.DB_NAME || 'shangtao',
   waitForConnections: true,
   connectionLimit: 10
@@ -292,6 +292,12 @@ app.post('/api/notifications/read', auth, async (req, res) => {
   );
   res.json({ code: 0, msg: '已全部已读' });
 });
+
+// ============================================================
+// 前端静态文件托管（使 http://localhost:3000/ 可直接访问 H5 应用）
+// 放在所有 API 路由之后，不影响 /api 接口
+// ============================================================
+app.use(express.static(path.join(__dirname, '..')));
 
 // ============================================================
 // 健康检查 + 启动
