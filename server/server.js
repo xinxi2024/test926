@@ -597,8 +597,10 @@ app.get('/api/messages/:otherId(\\d+)', auth, async (req, res) => {
 // ============================================================
 // 前端静态文件托管（使 http://localhost:3000/ 可直接访问 H5 应用）
 // 放在所有 API 路由之后，不影响 /api 接口
-// ============================================================
-app.use(express.static(path.join(__dirname, '..')));
+// 开发期不缓存，方便前端改动立即生效
+app.use(express.static(path.join(__dirname, '..'), {
+  setHeaders: (res) => { res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate'); }
+}));
 
 // ============================================================
 // 健康检查 + 启动

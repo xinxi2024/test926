@@ -354,19 +354,19 @@ body {
 .banner.b1 {
     background:
         linear-gradient(135deg, rgba(255, 140, 170, .55), rgba(120, 180, 255, .45)),
-        url('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cherry%20blossom%20campus%20university%20building%20spring%20pink%20petals%20sunny%20day&image_size=landscape_16_9') center/cover;
+        url('https://picsum.photos/id/1068/1600/600') center/cover;
 }
 
 .banner.b2 {
     background:
         linear-gradient(135deg, rgba(80, 120, 255, .55), rgba(30, 200, 180, .45)),
-        url('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=students%20trading%20second%20hand%20books%20outdoor%20campus%20green%20lawn%20sunny&image_size=landscape_16_9') center/cover;
+        url('https://picsum.photos/id/1018/1600/600') center/cover;
 }
 
 .banner.b3 {
     background:
         linear-gradient(135deg, rgba(255, 170, 80, .55), rgba(255, 90, 120, .45)),
-        url('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=fashion%20sneakers%20clothes%20minimal%20flatlay%20warm%20sunset%20light&image_size=landscape_16_9') center/cover;
+        url('https://picsum.photos/id/1059/1600/600') center/cover;
 }
 
 .banner-content h2 {
@@ -4768,3 +4768,269 @@ textarea.form-input {
     background: #10b981;
     display: inline-block;
 }
+
+/* ============================================================
+   高端化视觉升级（覆盖增强，不破坏布局）
+   ============================================================ */
+
+/* 全局变量 */
+:root {
+    --brand: #1e73e8;
+    --brand-2: #3aa0ff;
+    --brand-deep: #1554b8;
+    --ink: #0f172a;
+    --ink-2: #475569;
+    --line: rgba(15, 23, 42, .06);
+    --bg: #f4f6fb;
+    --radius: 16px;
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, .06), 0 1px 2px rgba(15, 23, 42, .04);
+    --shadow-md: 0 4px 14px rgba(15, 23, 42, .07), 0 2px 5px rgba(15, 23, 42, .04);
+    --shadow-lg: 0 12px 32px rgba(15, 23, 42, .10), 0 4px 10px rgba(15, 23, 42, .05);
+    --shadow-brand: 0 8px 24px rgba(30, 115, 232, .28);
+}
+
+/* 页面背景更柔和 */
+.page {
+    background: var(--bg);
+}
+
+/* 全局按钮统一：渐变暖色 + 投影 */
+button, .btn, .login-btn, .pub-btn, .friend-add-btn, .fr-accept {
+    transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+}
+button:active, .btn:active, .login-btn:active, .pub-btn:active, .friend-add-btn:active, .fr-accept:active {
+    transform: scale(.96);
+}
+
+/* ===== 首页顶部 ===== */
+.home-header {
+    background: linear-gradient(135deg, rgba(58, 160, 255, .12), rgba(139, 92, 246, .08));
+    padding-bottom: 14px;
+    border-bottom: none;
+}
+.home-title {
+    font-size: 26px;
+    font-weight: 800;
+    background: linear-gradient(120deg, #1e73e8, #3ab0ff 40%, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+}
+.search-bar {
+    background: rgba(255, 255, 255, .85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, .9);
+    box-shadow: var(--shadow-md);
+    border-radius: 14px;
+    height: 42px;
+}
+
+/* ===== Banner ===== */
+.banner-wrap {
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+/* ===== 分类入口 ===== */
+.categories {
+    background: #fff;
+    border-radius: 20px;
+    padding: 18px 10px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--line);
+}
+.cat-icon {
+    box-shadow: 0 6px 16px rgba(15, 23, 42, .10);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.cat-item:active .cat-icon {
+    transform: scale(.92);
+    box-shadow: 0 3px 8px rgba(15, 23, 42, .12);
+}
+
+/* ===== 商品卡片 ===== */
+.product {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.product:active {
+    transform: translateY(-1px) scale(.99);
+    box-shadow: var(--shadow-lg);
+}
+.product-img {
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+}
+.product-img::after {
+    background: linear-gradient(180deg, transparent 55%, rgba(15, 23, 42, .18));
+}
+.price {
+    font-size: 18px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ef4444, #f97316);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.seller {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* ===== 底部导航 ===== */
+.tab-bar {
+    background: rgba(255, 255, 255, .88);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    border: 1px solid rgba(255, 255, 255, .7);
+    box-shadow: 0 -4px 24px rgba(15, 23, 42, .08);
+    border-radius: 22px;
+    padding: 8px 10px;
+}
+.nav-item {
+    border-radius: 14px;
+    transition: background .2s ease, color .2s ease;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 600;
+}
+.nav-item.active {
+    color: var(--brand);
+    background: rgba(30, 115, 232, .10);
+}
+.publish-btn {
+    background: linear-gradient(135deg, #3aa0ff, #1e73e8);
+    box-shadow: var(--shadow-brand);
+}
+
+/* ===== 我的页面 ===== */
+.profile-card {
+    background: linear-gradient(135deg, #1e73e8, #3aa0ff 60%, #8b5cf6);
+    border-radius: 24px;
+    color: #fff;
+    box-shadow: var(--shadow-brand);
+    position: relative;
+    overflow: hidden;
+}
+.profile-card::after {
+    content: '';
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,.22), transparent 70%);
+    top: -80px; right: -60px;
+    pointer-events: none;
+}
+.profile-name { color: #fff; }
+.profile-school { color: rgba(255,255,255,.85); }
+.profile-avatar {
+    border: 3px solid rgba(255, 255, 255, .6);
+    box-shadow: 0 8px 20px rgba(0,0,0,.15);
+}
+.menu-grid, .profile-stats {
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+}
+.menu-item {
+    transition: background .15s ease;
+    border-radius: 14px;
+}
+.menu-item:active { background: #f8fafc; }
+
+/* ===== 登录页 ===== */
+.login-mask {
+    background: linear-gradient(135deg, #eef4ff 0%, #f5f0ff 50%, #fff 100%);
+}
+.login-content {
+    background: rgba(255, 255, 255, .92);
+    backdrop-filter: blur(24px);
+    border-radius: 28px 28px 0 0;
+    box-shadow: 0 -10px 40px rgba(15, 23, 42, .08);
+}
+.login-logo {
+    background: linear-gradient(135deg, #3aa0ff, #8b5cf6);
+    box-shadow: 0 16px 40px rgba(30, 115, 232, .35);
+}
+.login-field {
+    background: #fff;
+    border: 1.5px solid #eef2f7;
+    box-shadow: inset 0 1px 2px rgba(15,23,42,.03);
+    transition: border-color .2s, box-shadow .2s;
+}
+.login-field:focus-within {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 4px rgba(30, 115, 232, .10);
+}
+.login-btn {
+    background: linear-gradient(135deg, #3aa0ff, #1e73e8);
+    box-shadow: 0 10px 24px rgba(30, 115, 232, .35);
+}
+
+/* ===== 子页面 / 浮层 ===== */
+.sub-header, .chat-header, .admin-header {
+    background: rgba(255, 255, 255, .92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--line);
+}
+.sub-back, .chat-back, .back-btn {
+    border-radius: 50%;
+    transition: background .15s;
+}
+.sub-back:active, .chat-back:active, .back-btn:active {
+    background: rgba(15, 23, 42, .06);
+}
+.sub-body { background: var(--bg); }
+
+/* ===== 订单页 ===== */
+.order-card, .order-tabs {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+}
+.order-tab {
+    background: #f1f5f9;
+    border-radius: 14px;
+    font-weight: 600;
+    transition: all .15s;
+}
+.order-tab.on {
+    background: linear-gradient(135deg, #3aa0ff, #1e73e8);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(30, 115, 232, .25);
+}
+
+/* ===== 通用卡片 ===== */
+.card, .form-block {
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ===== 空状态 ===== */
+.empty-state {
+    color: #94a3b8;
+    font-size: 14px;
+}
+.es-icon { opacity: .6; }
+
+/* ===== 图片查看器细节 ===== */
+.img-viewer { background: rgba(0,0,0,.92); backdrop-filter: blur(8px); }
+
+/* ===== 动画过渡更顺滑 ===== */
+.page, .sub-page {
+    transition: transform .3s cubic-bezier(.32, .72, 0, 1), opacity .3s ease;
+}
+.msg-item:active, .order-card:active {
+    background: #f8fafc;
+}
+
+/* 平滑滚动 */
+.page { scroll-behavior: smooth; }

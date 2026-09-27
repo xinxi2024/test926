@@ -58,34 +58,34 @@ async function initApi() {
 
 // ===== 数据 =====
 const products = [
-    { id: 1, cat: '教材', title: '高等数学上下册+习题详解 同济第七版', price: 25, img: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=calculus%20textbook%20stack%20higher%20mathematics%20Chinese%20university%20clean%20desk&image_size=square', seller: '李学姐', location: '徐汇校区', views: 128, desc: '九成新，无笔记无划线，同济第七版上下册+习题详解，高数必备。' },
-    { id: 2, cat: '服饰', title: 'Nike Air Force 1 纯白 42码', price: 299, img: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=white%20nike%20air%20force%201%20sneakers%20minimal%20background&image_size=square', seller: '王学长', location: '奉贤校区', views: 256, desc: '穿过两次，鞋底几乎无磨损，鞋盒都在，码数不合适出。' },
-    { id: 3, cat: '数码', title: 'iPad Air 4 64G WiFi 深空灰', price: 2899, img: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=ipad%20air%20tablet%20space%20gray%20minimal%20desk%20product%20photo&image_size=square', seller: '陈同学', location: '徐汇校区', views: 512, desc: '2022年购入，原装充电器，无拆无修，电池健康92%。' },
-    { id: 4, cat: '生活', title: '小米台灯 Pro 智能调光', price: 89, img: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=xiaomi%20desk%20lamp%20white%20minimal%20modern%20warm%20light&image_size=square', seller: '刘学姐', location: '奉贤校区', views: 89, desc: '毕业出，功能完好，三档色温可调，护眼学习必备。' },
-    { id: 5, cat: '教材', title: '大学英语四级真题+词汇 全套', price: 35, img: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=english%20cet4%20exam%20books%20vocabulary%20stack%20study&image_size=square', seller: '赵学姐', location: '徐汇校区', views: 167, desc: '四级已过，真题卷+词汇书打包出，部分有笔记。' },
-    { id: 6, cat: '服饰', title: '优衣库羽绒服 男款 M码 黑色', price: 159, img: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=uniqlo%20black%20down%20jacket%20men%20minimal%20flatlay&image_size=square', seller: '孙学长', location: '奉贤校区', views: 203, desc: '去年冬天购入，只穿过几次，蓬松度好，保暖轻便。' },
-    { id: 7, cat: '数码', title: '罗技 MX Master 3 鼠标 黑色', price: 329, img: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=logitech%20mx%20master%203%20mouse%20black%20product%20photo&image_size=square', seller: '周同学', location: '徐汇校区', views: 178, desc: '办公神器，自定义按键，滚轮丝滑，箱说全。' },
-    { id: 8, cat: '生活', title: '北欧风小台灯+绿植组合', price: 49, img: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=nordic%20style%20desk%20lamp%20small%20plant%20cozy%20room&image_size=square', seller: '吴学姐', location: '奉贤校区', views: 92, desc: '宿舍装饰好物，台灯暖光，植物含盆，打包出。' },
+    { id: 1, cat: '教材', title: '高等数学上下册+习题详解 同济第七版', price: 25, img: 'https://picsum.photos/id/1062/1200/1200', seller: '李学姐', location: '徐汇校区', views: 128, desc: '九成新，无笔记无划线，同济第七版上下册+习题详解，高数必备。' },
+    { id: 2, cat: '服饰', title: 'Nike Air Force 1 纯白 42码', price: 299, img: 'https://picsum.photos/id/1011/1200/1200', seller: '王学长', location: '奉贤校区', views: 256, desc: '穿过两次，鞋底几乎无磨损，鞋盒都在，码数不合适出。' },
+    { id: 3, cat: '数码', title: 'iPad Air 4 64G WiFi 深空灰', price: 2899, img: 'https://picsum.photos/id/1025/1200/1200', seller: '陈同学', location: '徐汇校区', views: 512, desc: '2022年购入，原装充电器，无拆无修，电池健康92%。' },
+    { id: 4, cat: '生活', title: '小米台灯 Pro 智能调光', price: 89, img: 'https://picsum.photos/id/1062/1200/1200', seller: '刘学姐', location: '奉贤校区', views: 89, desc: '毕业出，功能完好，三档色温可调，护眼学习必备。' },
+    { id: 5, cat: '教材', title: '大学英语四级真题+词汇 全套', price: 35, img: 'https://picsum.photos/id/1074/1200/1200', seller: '赵学姐', location: '徐汇校区', views: 167, desc: '四级已过，真题卷+词汇书打包出，部分有笔记。' },
+    { id: 6, cat: '服饰', title: '优衣库羽绒服 男款 M码 黑色', price: 159, img: 'https://picsum.photos/id/1059/1200/1200', seller: '孙学长', location: '奉贤校区', views: 203, desc: '去年冬天购入，只穿过几次，蓬松度好，保暖轻便。' },
+    { id: 7, cat: '数码', title: '罗技 MX Master 3 鼠标 黑色', price: 329, img: 'https://picsum.photos/id/1031/1200/1200', seller: '周同学', location: '徐汇校区', views: 178, desc: '办公神器，自定义按键，滚轮丝滑，箱说全。' },
+    { id: 8, cat: '生活', title: '北欧风小台灯+绿植组合', price: 49, img: 'https://picsum.photos/id/1084/1200/1200', seller: '吴学姐', location: '奉贤校区', views: 92, desc: '宿舍装饰好物，台灯暖光，植物含盆，打包出。' },
 ];
 
 const posts = [
-    { name: '林小夏', tag: '毕业生', time: '10分钟前', campus: '奉贤校区', avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20female%20college%20student%20smiling%20headshot&image_size=square', cat: 'all', price: 120, imgs: ['https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=warm%20desk%20lamp%20cozy%20dorm%20room%20night&image_size=square', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=clear%20plastic%20storage%20boxes%20organized%20stack&image_size=square', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=small%20wooden%20bookshelf%20with%20books%20minimal&image_size=square'], text: '大四毕业啦！整理出一些陪伴四年的好物，希望学弟学妹们能继续善待它们 ✨ 台灯、收纳盒、书架都是九成新，价格好商量，支持自提～', likes: 128, comments: 23, tags: [] },
-    { name: '张明远', tag: '商学院', time: '32分钟前', campus: '徐汇校区', avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20male%20college%20student%20glasses%20headshot&image_size=square', cat: '教材', price: 80, imgs: ['https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=stack%20of%20economics%20finance%20textbooks%20notes%20desk&image_size=square', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=open%20textbook%20with%20highlighted%20notes%20math%20formulas&image_size=square'], text: '出大三金融学全套教材！微观经济学、宏观经济学、货币银行学，笔记很全，期末考试重点都标出来了 📖 打包带走更优惠，可小刀～', likes: 256, comments: 45, tags: [] },
-    { name: '数码小王子', tag: '数码', time: '1小时前', campus: '奉贤校区', avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20male%20tech%20student%20headshot&image_size=square', cat: '数码', price: 2380, imgs: ['https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=ipad%20air%20sky%20blue%20with%20apple%20pencil%20minimal%20white%20background&image_size=square'], text: '换新款了，出iPad Air 4 64G 天蓝色，一直带壳贴膜使用，成色99新。配件齐全：原装充电器、数据线、保护壳、类纸膜。电池健康92%，看网课记笔记绝配 📝 面交验机，可小刀！', likes: 89, comments: 67, tags: [] },
-    { name: '穿搭达人苏苏', tag: '时尚', time: '2小时前', campus: '奉贤校区', avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20female%20fashion%20student%20headshot&image_size=square', cat: 'all', price: 200, imgs: ['https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=beige%20knit%20sweater%20flatlay%20minimal%20white&image_size=square', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=denim%20jacket%20blue%20flatlay%20minimal%20white&image_size=square', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=white%20blouse%20shirt%20flatlay%20minimal%20white&image_size=square', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=black%20pleated%20skirt%20flatlay%20minimal%20white&image_size=square'], text: '换季清理衣柜！出一些只穿过一两次的衣服，都是品牌款，尺码S-M。优衣库、ZARA、H&M都有，质量都很好，价格超低 📉 欢迎来挑！', likes: 342, comments: 56, tags: [] },
-    { name: '运动健将阿杰', tag: '运动', time: '3小时前', campus: '徐汇校区', avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20male%20athlete%20student%20headshot&image_size=square', cat: 'all', price: 200, imgs: [], text: '求购二手羽毛球拍！预算200以内，最好带线和手胶。有YONEX或李宁的优先，成色无所谓，能打就行 🏸 有出的同学私聊我！', likes: 15, comments: 8, tags: ['#求购', '#羽毛球'] },
-    { name: '美妆小达人', tag: '美妆', time: '5小时前', campus: '奉贤校区', avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20female%20beauty%20student%20headshot&image_size=square', cat: 'all', price: 150, imgs: ['https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=skincare%20cosmetics%20set%20flatlay%20pastel%20aesthetic&image_size=square', 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=lipstick%20makeup%20collection%20flatlay%20minimal&image_size=square'], text: '毕业出闲置美妆！护肤品、口红、眼影盘都有，都是专柜正品，大部分只用过几次。色号不合适所以出，价格都很美丽 💄 满100包邮～', likes: 189, comments: 34, tags: [] },
+    { name: '林小夏', tag: '毕业生', time: '10分钟前', campus: '奉贤校区', avatar: 'https://picsum.photos/id/1062/1200/1200', cat: 'all', price: 120, imgs: ['https://picsum.photos/id/1011/1200/1200', 'https://picsum.photos/id/1025/1200/1200', 'https://picsum.photos/id/1062/1200/1200'], text: '大四毕业啦！整理出一些陪伴四年的好物，希望学弟学妹们能继续善待它们 ✨ 台灯、收纳盒、书架都是九成新，价格好商量，支持自提～', likes: 128, comments: 23, tags: [] },
+    { name: '张明远', tag: '商学院', time: '32分钟前', campus: '徐汇校区', avatar: 'https://picsum.photos/id/1074/1200/1200', cat: '教材', price: 80, imgs: ['https://picsum.photos/id/1059/1200/1200', 'https://picsum.photos/id/1031/1200/1200'], text: '出大三金融学全套教材！微观经济学、宏观经济学、货币银行学，笔记很全，期末考试重点都标出来了 📖 打包带走更优惠，可小刀～', likes: 256, comments: 45, tags: [] },
+    { name: '数码小王子', tag: '数码', time: '1小时前', campus: '奉贤校区', avatar: 'https://picsum.photos/id/1084/1200/1200', cat: '数码', price: 2380, imgs: ['https://picsum.photos/id/1062/1200/1200'], text: '换新款了，出iPad Air 4 64G 天蓝色，一直带壳贴膜使用，成色99新。配件齐全：原装充电器、数据线、保护壳、类纸膜。电池健康92%，看网课记笔记绝配 📝 面交验机，可小刀！', likes: 89, comments: 67, tags: [] },
+    { name: '穿搭达人苏苏', tag: '时尚', time: '2小时前', campus: '奉贤校区', avatar: 'https://picsum.photos/id/1011/1200/1200', cat: 'all', price: 200, imgs: ['https://picsum.photos/id/1025/1200/1200', 'https://picsum.photos/id/1062/1200/1200', 'https://picsum.photos/id/1074/1200/1200', 'https://picsum.photos/id/1059/1200/1200'], text: '换季清理衣柜！出一些只穿过一两次的衣服，都是品牌款，尺码S-M。优衣库、ZARA、H&M都有，质量都很好，价格超低 📉 欢迎来挑！', likes: 342, comments: 56, tags: [] },
+    { name: '运动健将阿杰', tag: '运动', time: '3小时前', campus: '徐汇校区', avatar: 'https://picsum.photos/id/1031/1200/1200', cat: 'all', price: 200, imgs: [], text: '求购二手羽毛球拍！预算200以内，最好带线和手胶。有YONEX或李宁的优先，成色无所谓，能打就行 🏸 有出的同学私聊我！', likes: 15, comments: 8, tags: ['#求购', '#羽毛球'] },
+    { name: '美妆小达人', tag: '美妆', time: '5小时前', campus: '奉贤校区', avatar: 'https://picsum.photos/id/1084/1200/1200', cat: 'all', price: 150, imgs: ['https://picsum.photos/id/1062/1200/1200', 'https://picsum.photos/id/1011/1200/1200'], text: '毕业出闲置美妆！护肤品、口红、眼影盘都有，都是专柜正品，大部分只用过几次。色号不合适所以出，价格都很美丽 💄 满100包邮～', likes: 189, comments: 34, tags: [] },
 ];
 
 const messages = [
-    { name: '林小雨', preview: '好的好的，那明天中午12点在图书馆门口见～', time: '刚刚', unread: 3, tag: '', avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20female%20college%20student%20smiling%20headshot&image_size=square' },
-    { name: '张明远', preview: '那本《微观经济学》还在吗？我想先看看…', time: '14:32', unread: 0, tag: '', avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20male%20college%20student%20smiling%20headshot&image_size=square' },
-    { name: '陈思琪', preview: '已经放到快递柜了，取件码是B-1…', time: '昨天', unread: 0, tag: '交易中', avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20female%20student%20gentle%20smile%20headshot&image_size=square' },
-    { name: '王浩然', preview: '谢谢学长！自行车骑起来很顺畅，下次有…', time: '昨天', unread: 0, tag: '', avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20male%20student%20friendly%20headshot&image_size=square' },
+    { name: '林小雨', preview: '好的好的，那明天中午12点在图书馆门口见～', time: '刚刚', unread: 3, tag: '', avatar: 'https://picsum.photos/id/1025/1200/1200' },
+    { name: '张明远', preview: '那本《微观经济学》还在吗？我想先看看…', time: '14:32', unread: 0, tag: '', avatar: 'https://picsum.photos/id/1062/1200/1200' },
+    { name: '陈思琪', preview: '已经放到快递柜了，取件码是B-1…', time: '昨天', unread: 0, tag: '交易中', avatar: 'https://picsum.photos/id/1074/1200/1200' },
+    { name: '王浩然', preview: '谢谢学长！自行车骑起来很顺畅，下次有…', time: '昨天', unread: 0, tag: '', avatar: 'https://picsum.photos/id/1059/1200/1200' },
     { name: '系统通知', preview: '您的商品「考研数学复习全书」已被收藏…', time: '12-18', unread: 0, tag: '', sys: true },
-    { name: '赵晓萱', preview: '哈哈没问题，到时候联系你！', time: '12-17', unread: 0, tag: '', avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20girl%20student%20headshot&image_size=square' },
-    { name: '刘子墨', preview: '相机镜头已经出掉了，感谢关注！', time: '12-15', unread: 0, tag: '', avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20boy%20student%20headshot&image_size=square' },
-    { name: '周雅婷', preview: '好的，我考虑一下再回复你', time: '12-12', unread: 0, tag: '', avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20female%20student%20headshot&image_size=square' },
+    { name: '赵晓萱', preview: '哈哈没问题，到时候联系你！', time: '12-17', unread: 0, tag: '', avatar: 'https://picsum.photos/id/1031/1200/1200' },
+    { name: '刘子墨', preview: '相机镜头已经出掉了，感谢关注！', time: '12-15', unread: 0, tag: '', avatar: 'https://picsum.photos/id/1084/1200/1200' },
+    { name: '周雅婷', preview: '好的，我考虑一下再回复你', time: '12-12', unread: 0, tag: '', avatar: 'https://picsum.photos/id/1062/1200/1200' },
 ];
 
 let currentCat = null;
@@ -103,7 +103,7 @@ let auditLog = [                             // 审核动态
 let profile = {                              // 当前登录用户资料
     name: '林晓晴',
     bio: '喜欢摄影和阅读，常出没于图书馆和操场。闲置物品会定期更新，欢迎来聊～',
-    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20a%20young%20asian%20female%20university%20student%20smiling%20professional%20headshot%20clean%20background&image_size=square'
+    avatar: 'https://picsum.photos/id/1011/1200/1200'
 };
 let addresses = [
     { id: 1, name: '林晓晴', phone: '138****8000', campus: '奉贤校区', detail: '奉浦校区 12号楼 302室', isDefault: true },
@@ -115,7 +115,7 @@ const defaultComments = [
     { name: '李学姐', text: '已拍，明天中午图书馆门口交易！', time: '20分钟前' },
     { name: '阿杰', text: '成色看着不错，帮顶！', time: '1小时前' },
 ];
-const commentAvatar = 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20college%20student%20headshot&image_size=square';
+const commentAvatar = 'https://picsum.photos/id/1025/1200/1200';
 let filterState = { minPrice: null, maxPrice: null };   // 高级筛选
 let settings = { trade: true, system: false, like: true, comment: true, showOnline: true, allowStranger: true }; // 开关状态
 let currentOrderTab = 'all';
@@ -590,7 +590,7 @@ function renderDiscover() {
         return `
       <div class="post-card">
         <div class="post-head">
-          <img class="post-avatar" src="${p.avatar}" alt="" />
+          <img class="post-avatar" src="${avatarUrl(p.name)}" alt="" />
           <div class="post-user">
             <div class="post-user-row">
               <span class="post-name">${p.name}</span>
@@ -671,12 +671,14 @@ function fmtMsgTime(t) {
     return (d.getMonth() + 1) + '月' + d.getDate() + '日';
 }
 // 头像：有图显示图，无图显示昵称首字（彩色底）
+// 统一头像：用 DiceBear 生成卡通头像（稳定、美观、不依赖网络图片接口）
+function avatarUrl(name) {
+    const seed = encodeURIComponent((name || 'user').toString());
+    return `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
+}
 function peerAvatarHtml(name, avatar) {
     name = name || '?';
-    if (avatar) return `<div class="avatar"><img src="${avatar}" alt="" /></div>`;
-    const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#ef4444'];
-    const c = colors[name.charCodeAt(0) % colors.length];
-    return `<div class="avatar" style="background:${c}">${escapeHtml(name.slice(0, 1))}</div>`;
+    return `<div class="avatar"><img src="${avatarUrl(name)}" alt="" /></div>`;
 }
 // 消息页顶部快捷入口
 function msgQuickHtml(reqCount) {
@@ -766,7 +768,7 @@ function renderLocalMessages() {
 // ===== 聊天详情 =====
 let currentChat = null;
 let chatMsgList = [];
-const myAvatar = 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20female%20student%20smiling%20professional%20headshot&image_size=square';
+const myAvatar = 'https://picsum.photos/id/1062/1200/1200';
 const chatHistory = {
     '林小雨': [
         { me: false, text: '你好，请问那本高数教材还在吗？' },
@@ -1346,6 +1348,13 @@ function switchPage(name, noHistory) {
     const hideBar = ['chat', 'orders', 'adminhome'].includes(name);
     tabBar.style.display = hideBar ? 'none' : '';
     pageEl.scrollTop = 0;
+    // 我的页：同步头像和昵称
+    if (name === 'profile') {
+        const pav = document.getElementById('profileAvatarImg');
+        if (pav) pav.src = avatarUrl(profile.name);
+        const pn = document.getElementById('profileNameText');
+        if (pn) pn.textContent = profile.name;
+    }
     // 防御：任何页面切换都保证外壳不处于被滚动状态（修复返回键跑到屏幕外的问题）
     const screenEl = document.querySelector('.screen');
     if (screenEl.scrollTop !== 0) screenEl.scrollTop = 0;
@@ -1665,7 +1674,7 @@ function openComments(idx) {
       <div class="sheet-title">全部评论 · ${list.length}</div>
       <div id="cmtList">
         ${list.map(c => `<div class="comment-item">
-          <img src="${c.avatar}" alt="" />
+          <img src="${avatarUrl(c.name)}" alt="" />
           <div style="flex:1;">
             <div class="comment-name">${c.name}</div>
             <div class="comment-text">${c.text}</div>
@@ -1991,7 +2000,7 @@ function openEditProfile() {
     openSub('编辑资料', body => {
         body.innerHTML = `
         <div class="card-panel" style="display:flex;align-items:center;gap:13px;" onclick="openChangeAvatar()">
-          <img src="${profile.avatar}" style="width:52px;height:52px;border-radius:50%;" alt="" />
+          <img src="${avatarUrl(profile.name)}" style="width:52px;height:52px;border-radius:50%;" alt="" />
           <div style="flex:1;">
             <div style="font-size:14px;font-weight:600;">点击更换头像</div>
             <div style="font-size:11.5px;color:#9ca3af;margin-top:3px;">支持选择预设头像</div>
@@ -2029,7 +2038,7 @@ function openChangeAvatar() {
         'cute%20cartoon%20cat%20avatar%20illustration%20minimal',
         'cute%20cartoon%20shiba%20dog%20avatar%20illustration'
     ];
-    const list = seeds.map(s => `https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=${s}&image_size=square`);
+    const list = seeds.map(s => `https://picsum.photos/id/1074/1200/1200`);
     openSheet(`<div class="sheet-title">选择头像</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:6px 0 10px;">
         ${list.map(src => `<img src="${src}" onclick="chooseAvatar('${src}')"
@@ -2168,7 +2177,7 @@ function openVersion() {
         body.innerHTML = `
         <div style="text-align:center;padding:22px 0 14px;">
           <img src="logo.png" style="width:70px;height:70px;border-radius:18px;" alt="logo"
-            onerror="this.src='https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=app%20icon%20blue%20shopping%20bag%20minimal%20logo&image_size=square'" />
+            onerror="this.src='https://picsum.photos/id/1059/1200/1200'" />
           <div style="font-size:16px;font-weight:700;margin-top:11px;">上商淘</div>
           <div style="font-size:12px;color:#9ca3af;margin-top:4px;">Version 2.3.1</div>
         </div>
