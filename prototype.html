@@ -295,6 +295,15 @@
   .reveal.in{opacity:1;transform:none}
   .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}.d5{transition-delay:.4s}
 
+  /* ===== 答辩注意事项 ===== */
+  .note-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:36px}
+  .note{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.22);border-radius:16px;padding:18px}
+  .note .ni{font-size:20px;margin-bottom:8px}
+  .note b{font-size:13.5px;display:block;margin-bottom:4px}
+  .note p{font-size:12px;color:var(--muted);line-height:1.6}
+  @media(max-width:1000px){.note-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:640px){.note-grid{grid-template-columns:1fr}}
+
   /* ===== 响应式 ===== */
   @media(max-width:1000px){
     .screens{grid-template-columns:repeat(3,1fr)}
@@ -578,25 +587,32 @@
 <!-- ============ 演示动线 ============ -->
 <section class="wrap" id="demo">
   <div class="kicker reveal">07 · 十分钟答辩动线</div>
-  <div class="sec-title reveal">视频 + 原型 + 交互 + 答辩，<span class="grad">10 分钟节奏建议</span></div>
+  <div class="sec-title reveal">视频 + 原型 + 交互 + 答辩，<span class="grad">10 分钟节奏分配</span></div>
 
   <div class="timeline">
     <div class="tl reveal d1">
-      <div class="pt">🎬</div><div class="dur">0:00 – 2:00</div><h4>宣传视频</h4>
-      <p>开场放 App 宣传视频，建立产品第一印象，结尾画面停留在 Logo 与 slogan。</p>
+      <div class="pt">🎬</div><div class="dur">0:00 – 1:30</div><h4>宣传视频 · 1~1.5 分钟</h4>
+      <p>开场放 App 宣传视频，快速建立产品第一印象，结尾画面停留在 Logo 与 slogan。</p>
     </div>
     <div class="tl reveal d2">
-      <div class="pt">📐</div><div class="dur">2:00 – 4:00</div><h4>原型设计讲解</h4>
-      <p>用本页讲痛点 → 双角色 → 六步闭环；指出蓝/紫主题如何区分身份，体现设计思考。</p>
+      <div class="pt">📐</div><div class="dur">1:30 – 4:30</div><h4>原型 / 设计思路 · 2~3 分钟</h4>
+      <p>沿本页讲痛点 → 双角色 → 六步闭环 → 界面实拍；指出蓝/紫主题如何区分身份，体现设计思考。</p>
     </div>
     <div class="tl reveal d3">
-      <div class="pt">📲</div><div class="dur">4:00 – 8:00</div><h4>完整应用交互</h4>
-      <p>现场真机操作：注册新号 → 发布闲置（实拍上传）→ 审核通过 → 下单 → 聊天约定 → 收货评价。</p>
+      <div class="pt">📲</div><div class="dur">4:30 – 7:00</div><h4>交互演示 · 2~3 分钟</h4>
+      <p>现场真机操作一条完整任务流：注册新号 → 发布闲置（实拍上传）→ 审核通过 → 下单 → 聊天 → 收货评价。</p>
     </div>
     <div class="tl reveal d4">
-      <div class="pt">🙋</div><div class="dur">8:00 – 10:00</div><h4>评委提问答辩</h4>
-      <p>准备话题：与综合平台差异（同校信任+审核）、冷启动（毕业季教材回收切入）、技术可扩展性。</p>
+      <div class="pt">🙋</div><div class="dur">7:00 – 10:00</div><h4>评委提问答辩 · 3~4 分钟</h4>
+      <p>从容应答，答案预设见《演讲稿与答辩手册.md》；先肯定问题，再给结论，最后举实例。</p>
     </div>
+  </div>
+
+  <div class="note-grid reveal">
+    <div class="note"><div class="ni">⏱️</div><b>严格掐表排练</b><p>全程排练至少 2~3 遍并掐表，超时会被现场打断，宁可留出 20 秒余量。</p></div>
+    <div class="note"><div class="ni">💻</div><b>提前到场测试</b><p>提前测试投影、翻页器与网络；服务离线可运行，但务必先预演一遍。</p></div>
+    <div class="note"><div class="ni">👥</div><b>明确分工</b><p>分好谁讲视频旁白、谁讲原型、谁现场操作、谁主答评委问题。</p></div>
+    <div class="note"><div class="ni">🔋</div><b>离线备份</b><p>手机/电脑充满电；全部文件本地离线备份，不依赖现场网络。</p></div>
   </div>
 </section>
 
