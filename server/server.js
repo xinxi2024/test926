@@ -557,6 +557,20 @@ app.post('/api/messages/send', auth, async (req, res) => {
     'INSERT INTO private_message (sender_id, receiver_id, content) VALUES (?,?,?)',
     [req.user.id, toUserId, content]
   );
+  // 实时推送给接收方（若在线）
+  const sender = await pool.query('SELECT id, nickname, avatar FROM `user` WHERE id = ?', [req.user.id]);
+  pushToUser(toUserId, {
+    type: 'new_message',
+    data: {
+      id: r.insertId,
+      sender_id: req.user.id,
+      receiver_id: toUserId,
+      content,
+      is_read: 0,
+      created_at: new Date(),
+      sender: sender[0][0] ? { id: sender[0][0].id, nickname: sender[0][0].nickname, avatar: sender[0][0].avatar } : null
+    }
+  });
   res.json({ code: 0, msg: '发送成功', data: { id: r.insertId } });
 });
 
@@ -600,9 +614,49 @@ process.on('uncaughtException', (err) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const server = require('http').createServer(app);
+
+// ============================================================
+// WebSocket 实时消息
+// ============================================================
+const { WebSocketServer } = require('ws');
+const wss = new WebSocketServer({ noServer: true });
+const wsClients = new Map();  // userId -> Set<ws>
+
+server.on('upgrade', (req, socket, head) => {
+  const url = new URL(req.url, 'http://localhost');
+  if (url.pathname !== '/ws') { socket.destroy(); return; }
+  const token = url.searchParams.get('token');
+  let userId = null;
+  try { userId = jwt.verify(token, JWT_SECRET).id; }
+  catch (e) { socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n'); socket.destroy(); return; }
+  wss.handleUpgrade(req, socket, head, (ws) => {
+    if (!wsClients.has(userId)) wsClients.set(userId, new Set());
+    wsClients.get(userId).add(ws);
+    ws.userId = userId;
+    wss.emit('connection', ws, userId);
+  });
+});
+
+wss.on('connection', (ws, userId) => {
+  console.log('[WS] 用户', userId, '已连接，在线', wsClients.size);
+  ws.on('close', () => {
+    const set = wsClients.get(userId);
+    if (set) { set.delete(ws); if (set.size === 0) wsClients.delete(userId); }
+  });
+});
+
+function pushToUser(userId, payload) {
+  const set = wsClients.get(userId);
+  if (!set) return;
+  const msg = JSON.stringify(payload);
+  set.forEach(ws => { if (ws.readyState === 1) ws.send(msg); });
+}
+
+server.listen(PORT, () => {
   console.log('=================================');
   console.log('  上商淘后端服务已启动');
   console.log('  地址: http://localhost:' + PORT);
+  console.log('  WS : ws://localhost:' + PORT + '/ws');
   console.log('=================================');
 });

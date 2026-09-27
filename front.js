@@ -3,6 +3,36 @@ const API_BASE = '';
 let apiToken = localStorage.getItem('st_token') || '';
 let apiOnline = false;
 let apiUser = null;
+let ws = null;
+function connectWS() {
+    if (ws && (ws.readyState === 0 || ws.readyState === 1)) return;
+    if (!apiToken) return;
+    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    ws = new WebSocket(proto + '//' + location.host + '/ws?token=' + apiToken);
+    ws.onopen = () => console.log('[WS] 已连接');
+    ws.onclose = () => { ws = null; setTimeout(connectWS, 3000); };
+    ws.onerror = () => { try{ws.close();}catch(e){} };
+    ws.onmessage = (ev) => {
+        try {
+            const m = JSON.parse(ev.data);
+            if (m.type === 'new_message') onNewMessage(m.data);
+        } catch (e) {}
+    };
+}
+function onNewMessage(msg) {
+    // 若在与该发送者的聊天页，直接追加
+    if (currentChat && Number(currentChat.id) === Number(msg.sender_id)) {
+        chatMsgList.push(msg);
+        paintChatMessages(true);
+        // 标记已读
+        apiFetch('/api/messages/' + msg.sender_id + '?afterId=0').catch(()=>{});
+    }
+    // 刷新消息列表（最后消息、未读数）
+    if (document.getElementById('page-message').classList.contains('active')) renderMessages();
+    // 顶部导航红点
+    const badge = document.getElementById('msgNavBadge');
+    if (badge) { badge.style.display = 'flex'; badge.textContent = '•'; }
+}
 async function apiFetch(path, opts) {
     opts = opts || {};
     opts.headers = opts.headers || {};
@@ -795,20 +825,35 @@ async function pollChat() {
         }
     } catch (e) { }
 }
+function fmtBubbleTime(t) {
+    if (!t) return '';
+    const d = new Date(t);
+    return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
 function paintChatMessages(scroll) {
     const body = document.getElementById('chatBody');
     const myName = (apiUser && apiUser.nickname) || profile.name;
     const myAv = apiUser ? (apiUser.avatar || '') : myAvatar;
-    const rows = chatMsgList.map(m => {
+    let html = '';
+    let lastDay = '';
+    chatMsgList.forEach(m => {
         const me = m.sender_id !== undefined ? (m.sender_id === apiUser.id) : m.me;
-        return `
+        const day = m.created_at ? new Date(m.created_at).toDateString() : '';
+        if (day && day !== lastDay) {
+            html += `<div class="chat-time">${fmtMsgTime(m.created_at) || '今天'}</div>`;
+            lastDay = day;
+        }
+        html += `
       <div class="chat-row ${me ? 'me' : 'other'}">
         <div class="chat-avatar">${me ? peerAvatarHtml(myName, myAv) : peerAvatarHtml(currentChat.name, currentChat.avatar)}</div>
-        <div class="bubble">${escapeHtml(m.content)}</div>
+        <div class="bubble-wrap">
+          <div class="bubble">${escapeHtml(m.content !== undefined ? m.content : (m.text !== undefined ? m.text : ''))}</div>
+          <div class="bubble-time ${me?'r':''}">${fmtBubbleTime(m.created_at)}</div>
+        </div>
       </div>`;
-    }).join('');
-    const firstTime = chatMsgList.length ? fmtMsgTime(chatMsgList[0].created_at) : '今天';
-    body.innerHTML = `<div class="chat-time">${firstTime || '今天'}</div>` + rows;
+    });
+    if (!lastDay) html = `<div class="chat-time">今天</div>` + html;
+    body.innerHTML = html;
     if (scroll) body.scrollTop = body.scrollHeight;
 }
 async function sendChatMsg() {
@@ -1159,6 +1204,7 @@ async function doLogin() {
                 apiUser = r.data.user;
                 localStorage.setItem('st_token', apiToken);
                 profile.name = apiUser.nickname || profile.name;
+                connectWS();
             }
         } catch (e) { /* 后端异常时继续走本地登录 */ }
     }
@@ -1183,6 +1229,7 @@ async function doLogin() {
 function logout() {
     document.getElementById('loginMask').classList.remove('hide');
     pageHistory = [];
+    if (ws) { try{ws.close();}catch(e){} ws=null; }
     apiToken = ''; apiUser = null;
     localStorage.removeItem('st_token');
     selectRole('user');
@@ -2390,11 +2437,23 @@ setInterval(() => {
 
 // ===== 初始化 =====
 initApi();   // 探测后端是否可用
+// 状态栏左上角实时时钟（时:分:秒，每秒刷新）
+(function tickClock() {
+    const el = document.getElementById('statusClock');
+    if (el) {
+        const d = new Date();
+        el.textContent = d.getHours().toString().padStart(2,'0') + ':'
+            + d.getMinutes().toString().padStart(2,'0') + ':'
+            + d.getSeconds().toString().padStart(2,'0');
+    }
+    setTimeout(tickClock, 1000);
+})();
 // 若本地已有登录令牌，先解出用户ID（刷新页面后不用重新登录也能看消息）
 if (apiToken) {
     try {
         apiUser = JSON.parse(atob(apiToken.split('.')[1]));
         if (apiUser.nickname) profile.name = apiUser.nickname;
+        connectWS();
     } catch (e) { apiToken = ''; localStorage.removeItem('st_token'); }
 }
 restore();   // 恢复本地持久化数据（商品/订单/收藏等）
