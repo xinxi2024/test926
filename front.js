@@ -1,3 +1,31 @@
+// ===== API 客户端（好友 / 私信依赖后端；后端不可用时自动降级本地模式） =====
+const API_BASE = '';
+let apiToken = localStorage.getItem('st_token') || '';
+let apiOnline = false;
+let apiUser = null;
+async function apiFetch(path, opts) {
+    opts = opts || {};
+    opts.headers = opts.headers || {};
+    if (apiToken) opts.headers['Authorization'] = 'Bearer ' + apiToken;
+    if (opts.body && !(opts.body instanceof FormData)) {
+        opts.headers['Content-Type'] = 'application/json';
+        if (typeof opts.body !== 'string') opts.body = JSON.stringify(opts.body);
+    }
+    const res = await fetch(API_BASE + path, opts);
+    return await res.json().catch(() => ({ code: -1 }));
+}
+async function initApi() {
+    try {
+        const h = await fetch(API_BASE + '/api/health');
+        const j = await h.json();
+        apiOnline = (j.code === 0);
+        console.log(apiOnline ? '[API] 后端已连接（MySQL 模式）' : '[API] 后端不可用，使用本地模式');
+    } catch (e) {
+        apiOnline = false;
+        console.log('[API] 后端未启动，使用本地模式');
+    }
+}
+
 // ===== 数据 =====
 const products = [
     { id: 1, cat: '教材', title: '高等数学上下册+习题详解 同济第七版', price: 25, img: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=calculus%20textbook%20stack%20higher%20mathematics%20Chinese%20university%20clean%20desk&image_size=square', seller: '李学姐', location: '徐汇校区', views: 128, desc: '九成新，无笔记无划线，同济第七版上下册+习题详解，高数必备。' },
@@ -595,11 +623,99 @@ function likePost(el, idx) {
 }
 
 // ===== 消息页 =====
-function renderMessages() {
+let incomingRequestCount = 0;
+let chatPollTimer = null;
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function fmtMsgTime(t) {
+    if (!t) return '';
+    const d = new Date(t);
+    const now = new Date();
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    if (d.toDateString() === now.toDateString()) return hh + ':' + mm;
+    const yd = new Date(now); yd.setDate(now.getDate() - 1);
+    if (d.toDateString() === yd.toDateString()) return '昨天';
+    return (d.getMonth() + 1) + '月' + d.getDate() + '日';
+}
+// 头像：有图显示图，无图显示昵称首字（彩色底）
+function peerAvatarHtml(name, avatar) {
+    name = name || '?';
+    if (avatar) return `<div class="avatar"><img src="${avatar}" alt="" /></div>`;
+    const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#ef4444'];
+    const c = colors[name.charCodeAt(0) % colors.length];
+    return `<div class="avatar" style="background:${c}">${escapeHtml(name.slice(0, 1))}</div>`;
+}
+// 消息页顶部快捷入口
+function msgQuickHtml(reqCount) {
+    return `
+    <div class="msg-quick-row" onclick="openFriendRequests()">
+      <div class="mq-icon" style="background:linear-gradient(135deg,#60a5fa,#3b82f6)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      </div>
+      <span class="mq-label">好友申请</span>
+      ${reqCount > 0 ? `<span class="mq-badge">${reqCount}</span>` : `<span class="mq-arrow">›</span>`}
+    </div>
+    <div class="msg-quick-row" onclick="openAddFriend()">
+      <div class="mq-icon" style="background:linear-gradient(135deg,#34d399,#10b981)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+      <span class="mq-label">添加好友</span><span class="mq-arrow">›</span>
+    </div>
+    <div class="msg-quick-row" onclick="openNotifications()">
+      <div class="mq-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <span class="mq-label">系统通知</span><span class="mq-arrow">›</span>
+    </div>`;
+}
+// 单个会话行
+function convItemHtml(f) {
+    const fid = Number(f.friend_id);
+    const obj = JSON.stringify({ id: fid, name: f.nickname, avatar: f.avatar || '' });
+    return `
+    <div class="msg-item" onclick='openChatObj(${obj})'>
+      ${peerAvatarHtml(f.nickname, f.avatar)}
+      <div class="msg-body">
+        <div class="msg-top">
+          <span class="msg-name">${escapeHtml(f.nickname)}</span>
+          <span class="msg-time">${fmtMsgTime(f.last_time)}</span>
+        </div>
+        <div class="msg-preview">${escapeHtml(f.last_content || '开始你们的聊天吧')}</div>
+      </div>
+      ${Number(f.unread) > 0 ? `<span class="unread-badge">${Number(f.unread)}</span>` : ''}
+    </div>`;
+}
+async function renderMessages() {
+    const box = document.getElementById('msgList');
+    if (apiOnline && apiToken) {
+        try {
+            const [fr, rq] = await Promise.all([
+                apiFetch('/api/friends'),
+                apiFetch('/api/friends/requests/incoming')
+            ]);
+            if (fr.code === 0 && rq.code === 0) {
+                incomingRequestCount = rq.data.length;
+                const badge = document.getElementById('msgNavBadge');
+                if (badge) { badge.style.display = incomingRequestCount ? 'flex' : 'none'; badge.textContent = incomingRequestCount; }
+                box.innerHTML = msgQuickHtml(incomingRequestCount) +
+                    (fr.data.length
+                        ? fr.data.map(convItemHtml).join('')
+                        : `<div class="empty-state"><div class="es-icon">💬</div>还没有好友<div style="margin-top:6px;font-size:12px;">点击上方「添加好友」开始聊天吧</div></div>`);
+                return;
+            }
+        } catch (e) { /* 降级 */ }
+    }
+    renderLocalMessages();
+}
+// 降级：本地模拟会话列表
+function renderLocalMessages() {
     document.getElementById('msgList').innerHTML = messages.map((m, i) => {
         const avatarHtml = m.sys
             ? `<div class="avatar sys"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>`
-            : `<div class="avatar"><img src="${m.avatar}" alt="" /></div>`;
+            : peerAvatarHtml(m.name, m.avatar);
         const unreadHtml = m.unread > 0 ? `<span class="unread-badge">${m.unread}</span>` : '';
         const tagHtml = m.tag ? `<span class="trade-tag">${m.tag}</span>` : '';
         return `
@@ -607,10 +723,10 @@ function renderMessages() {
         ${avatarHtml}
         <div class="msg-body">
           <div class="msg-top">
-            <span class="msg-name">${m.name}${tagHtml}</span>
+            <span class="msg-name">${escapeHtml(m.name)}${tagHtml}</span>
             <span class="msg-time">${m.time}</span>
           </div>
-          <div class="msg-preview">${m.preview}</div>
+          <div class="msg-preview">${escapeHtml(m.preview)}</div>
         </div>
         ${unreadHtml}
       </div>`;
@@ -619,6 +735,7 @@ function renderMessages() {
 
 // ===== 聊天详情 =====
 let currentChat = null;
+let chatMsgList = [];
 const myAvatar = 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20young%20asian%20female%20student%20smiling%20professional%20headshot&image_size=square';
 const chatHistory = {
     '林小雨': [
@@ -637,37 +754,168 @@ const chatHistory = {
         { me: false, text: '好的，已经放到快递柜了，取件码是B-1234' },
     ],
 };
+// 本地模拟列表入口
 function openChat(i) {
     const m = messages[i];
-    currentChat = m;
-    document.getElementById('chatName').textContent = m.name;
-    renderChat();
+    if (m.sys) return openNotifications();
+    openChatObj({ name: m.name, avatar: m.avatar });
+}
+// 打开真实会话
+async function openChatObj(obj) {
+    currentChat = obj;
+    document.getElementById('chatName').textContent = obj.name;
     switchPage('chat');
+    if (apiOnline && apiToken && obj.id) {
+        chatMsgList = [];
+        await loadChatMessages(true);
+        if (chatPollTimer) clearInterval(chatPollTimer);
+        chatPollTimer = setInterval(pollChat, 1500);
+    } else {
+        chatMsgList = (chatHistory[obj.name] || [{ me: false, text: '你好，请问有什么可以帮你？' }]).map(x => Object.assign({}, x));
+        paintChatMessages(true);
+    }
 }
-function renderChat() {
+async function loadChatMessages(scroll) {
+    const r = await apiFetch('/api/messages/' + currentChat.id);
+    if (r.code === 0) {
+        chatMsgList = r.data;
+        paintChatMessages(scroll);
+    }
+}
+// 轮询：只拉新消息
+async function pollChat() {
+    if (!document.getElementById('page-chat').classList.contains('active')) return;
+    const lastId = chatMsgList.length ? chatMsgList[chatMsgList.length - 1].id : 0;
+    if (!lastId) return;
+    try {
+        const r = await apiFetch('/api/messages/' + currentChat.id + '?afterId=' + lastId);
+        if (r.code === 0 && r.data.length) {
+            chatMsgList = chatMsgList.concat(r.data);
+            paintChatMessages(true);
+        }
+    } catch (e) { }
+}
+function paintChatMessages(scroll) {
     const body = document.getElementById('chatBody');
-    const history = chatHistory[currentChat.name] || [{ me: false, text: '你好，请问有什么可以帮你？' }];
-    body.innerHTML = `<div class="chat-time">今天</div>` + history.map(msg => `
-      <div class="chat-row ${msg.me ? 'me' : 'other'}">
-        <div class="chat-avatar"><img src="${msg.me ? myAvatar : currentChat.avatar}" alt="" /></div>
-        <div class="bubble">${msg.text}</div>
-      </div>
-    `).join('');
-    body.scrollTop = body.scrollHeight;
+    const myName = (apiUser && apiUser.nickname) || profile.name;
+    const myAv = apiUser ? (apiUser.avatar || '') : myAvatar;
+    const rows = chatMsgList.map(m => {
+        const me = m.sender_id !== undefined ? (m.sender_id === apiUser.id) : m.me;
+        return `
+      <div class="chat-row ${me ? 'me' : 'other'}">
+        <div class="chat-avatar">${me ? peerAvatarHtml(myName, myAv) : peerAvatarHtml(currentChat.name, currentChat.avatar)}</div>
+        <div class="bubble">${escapeHtml(m.content)}</div>
+      </div>`;
+    }).join('');
+    const firstTime = chatMsgList.length ? fmtMsgTime(chatMsgList[0].created_at) : '今天';
+    body.innerHTML = `<div class="chat-time">${firstTime || '今天'}</div>` + rows;
+    if (scroll) body.scrollTop = body.scrollHeight;
 }
-function sendChatMsg() {
+async function sendChatMsg() {
     const input = document.getElementById('chatInput');
-    const text = input.value.trim();
-    if (!text) return;
-    if (!chatHistory[currentChat.name]) chatHistory[currentChat.name] = [];
-    chatHistory[currentChat.name].push({ me: true, text });
+    const content = input.value.trim();
+    if (!content) return;
+    if (apiOnline && apiToken && currentChat && currentChat.id) {
+        const r = await apiFetch('/api/messages/send', {
+            method: 'POST',
+            body: { toUserId: currentChat.id, content }
+        });
+        if (r.code === 0) {
+            input.value = '';
+            return loadChatMessages(true);
+        }
+        return showToast(r.msg || '发送失败');
+    }
+    // 降级：本地模拟收发
+    chatMsgList.push({ me: true, text: content });
     input.value = '';
-    renderChat();
+    paintChatMessages(true);
     setTimeout(() => {
         const replies = ['好的，我知道了～', '嗯嗯，没问题！', '可以的，随时联系', '收到，谢谢！'];
-        chatHistory[currentChat.name].push({ me: false, text: replies[Math.floor(Math.random() * replies.length)] });
-        renderChat();
+        chatMsgList.push({ me: false, text: replies[Math.floor(Math.random() * replies.length)] });
+        paintChatMessages(true);
     }, 800);
+}
+
+// ===== 添加好友 =====
+function openAddFriend() {
+    openSub('添加好友', body => {
+        body.innerHTML = `
+      <div class="add-friend-search">
+        <input type="text" id="addFriendKw" placeholder="输入手机号或昵称搜索"
+          onkeydown="if(event.key==='Enter')doSearchFriend()" />
+        <button onclick="doSearchFriend()">搜索</button>
+      </div>
+      <div class="add-friend-tip">💡 让好友先用手机号在登录页登录，即可被搜索到</div>
+      <div id="friendSearchResult"></div>`;
+    });
+}
+async function doSearchFriend() {
+    const kwEl = document.getElementById('addFriendKw');
+    const box = document.getElementById('friendSearchResult');
+    const kw = kwEl.value.trim();
+    if (!kw) return showToast('请输入手机号或昵称');
+    box.innerHTML = `<div class="empty-state">搜索中…</div>`;
+    const r = await apiFetch('/api/user/search?keyword=' + encodeURIComponent(kw));
+    if (r.code !== 0 || !r.data.length) {
+        box.innerHTML = `<div class="empty-state"><div class="es-icon">🔍</div>未找到相关用户</div>`;
+        return;
+    }
+    box.innerHTML = r.data.map(u => `
+    <div class="friend-row">
+      ${peerAvatarHtml(u.nickname, u.avatar)}
+      <div class="friend-row-info">
+        <div class="friend-row-name">${escapeHtml(u.nickname)}</div>
+        <div class="friend-row-sub">${escapeHtml(u.phone)}${u.college ? ' · ' + escapeHtml(u.college) : ''}</div>
+      </div>
+      <button class="friend-add-btn" onclick="sendFriendRequest(${Number(u.id)},this)">加好友</button>
+    </div>`).join('');
+}
+async function sendFriendRequest(id, btn) {
+    const r = await apiFetch('/api/friends/request', {
+        method: 'POST',
+        body: { toUserId: id, message: '我是' + ((apiUser && apiUser.nickname) || '同学') }
+    });
+    showToast(r.msg);
+    if (r.code === 0) { btn.textContent = '已申请'; btn.disabled = true; }
+    if (r.code === 2) closeSub();   // 对方已向我申请，去好友申请页处理
+}
+
+// ===== 好友申请列表 =====
+function openFriendRequests() {
+    openSub('好友申请', body => {
+        body.innerHTML = `<div class="empty-state">加载中…</div>`;
+        loadFriendRequests(body);
+    });
+}
+async function loadFriendRequests(body) {
+    const r = await apiFetch('/api/friends/requests/incoming');
+    if (r.code !== 0 || !r.data.length) {
+        body.innerHTML = `<div class="empty-state"><div class="es-icon">📭</div>暂无好友申请</div>`;
+        return;
+    }
+    body.innerHTML = r.data.map(q => `
+    <div class="friend-row">
+      ${peerAvatarHtml(q.from_nickname, q.from_avatar)}
+      <div class="friend-row-info">
+        <div class="friend-row-name">${escapeHtml(q.from_nickname)}</div>
+        <div class="friend-row-sub">${escapeHtml(q.message || q.from_phone)}</div>
+      </div>
+      <div class="friend-req-actions">
+        <button class="fr-accept" onclick="acceptFriendRequest(${Number(q.id)})">接受</button>
+        <button class="fr-reject" onclick="rejectFriendRequest(${Number(q.id)})">拒绝</button>
+      </div>
+    </div>`).join('');
+}
+async function acceptFriendRequest(id) {
+    const r = await apiFetch('/api/friends/request/' + id + '/accept', { method: 'POST' });
+    showToast(r.msg);
+    if (r.code === 0) { closeSub(); renderMessages(); }
+}
+async function rejectFriendRequest(id) {
+    const r = await apiFetch('/api/friends/request/' + id + '/reject', { method: 'POST' });
+    showToast(r.msg);
+    if (r.code === 0) openFriendRequests();
 }
 
 // ===== 发布 =====
@@ -888,23 +1136,39 @@ function doRegister() {
     showToast('🎉 注册成功，欢迎加入上商淘！');
 }
 
-function doLogin() {
+async function doLogin() {
     const phone = document.getElementById('loginPhone').value.trim();
     const code = document.getElementById('loginCode').value.trim();
     const agree = document.getElementById('agreeCheck').checked;
     if (!/^1\d{10}$/.test(phone)) return showToast('请输入正确的手机号');
     if (code.length < 4) return showToast('请输入验证码');
     if (!agree) return showToast('请先同意用户协议');
-    // 已注册用户登录时恢复其昵称
+
+    // 已注册用户登录时恢复其昵称（本地）
     const regUsers = getRegisteredUsers();
     if (currentRole === 'user' && regUsers[phone]) {
         profile.name = regUsers[phone].name;
     }
+
+    // 优先走后端登录，拿到 JWT（好友/私信依赖）
+    if (apiOnline) {
+        try {
+            const r = await apiFetch('/api/auth/login', { method: 'POST', body: { phone, code } });
+            if (r.code === 0) {
+                apiToken = r.data.token;
+                apiUser = r.data.user;
+                localStorage.setItem('st_token', apiToken);
+                profile.name = apiUser.nickname || profile.name;
+            }
+        } catch (e) { /* 后端异常时继续走本地登录 */ }
+    }
+
     const roleText = currentRole === 'admin' ? '审核员' : '普通用户';
     showToast('登录成功（' + roleText + '）');
     setTimeout(() => {
         document.getElementById('loginMask').classList.add('hide');
         pageHistory = [];
+        document.querySelector('.screen').scrollTop = 0;
         // 审核员进入工作台，普通用户进入首页
         if (currentRole === 'admin') {
             renderAdmin();
@@ -919,6 +1183,8 @@ function doLogin() {
 function logout() {
     document.getElementById('loginMask').classList.remove('hide');
     pageHistory = [];
+    apiToken = ''; apiUser = null;
+    localStorage.removeItem('st_token');
     selectRole('user');
     showToast('已退出登录');
 }
@@ -1014,6 +1280,10 @@ let pageHistory = ['home'];
 function switchPage(name, noHistory) {
     // 审核员点「首页」进入工作台
     if (name === 'home' && currentRole === 'admin') name = 'adminhome';
+    // 离开聊天页时停止消息轮询
+    if (name !== 'chat' && document.getElementById('page-chat').classList.contains('active')) {
+        if (chatPollTimer) { clearInterval(chatPollTimer); chatPollTimer = null; }
+    }
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const pageEl = document.getElementById('page-' + name);
     pageEl.classList.add('active');
@@ -1029,6 +1299,9 @@ function switchPage(name, noHistory) {
     const hideBar = ['chat', 'orders', 'adminhome'].includes(name);
     tabBar.style.display = hideBar ? 'none' : '';
     pageEl.scrollTop = 0;
+    // 防御：任何页面切换都保证外壳不处于被滚动状态（修复返回键跑到屏幕外的问题）
+    const screenEl = document.querySelector('.screen');
+    if (screenEl.scrollTop !== 0) screenEl.scrollTop = 0;
     if (!noHistory) {
         if (pageHistory[pageHistory.length - 1] !== name) {
             pageHistory.push(name);
@@ -1037,6 +1310,7 @@ function switchPage(name, noHistory) {
     }
     if (name === 'account' || name === 'profile') refreshProfileRole();
     if (name === 'orders') renderOrders();
+    if (name === 'message') renderMessages();
     if (name === 'adminhome') renderAdminHome();
 }
 // 返回上一页：优先关闭浮层，再回退页面
@@ -2115,6 +2389,14 @@ setInterval(() => {
 }, 3500);
 
 // ===== 初始化 =====
+initApi();   // 探测后端是否可用
+// 若本地已有登录令牌，先解出用户ID（刷新页面后不用重新登录也能看消息）
+if (apiToken) {
+    try {
+        apiUser = JSON.parse(atob(apiToken.split('.')[1]));
+        if (apiUser.nickname) profile.name = apiUser.nickname;
+    } catch (e) { apiToken = ''; localStorage.removeItem('st_token'); }
+}
 restore();   // 恢复本地持久化数据（商品/订单/收藏等）
 // 首屏骨架屏（提升加载体验）
 (function () {

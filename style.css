@@ -3739,6 +3739,8 @@ textarea.form-input {
     background: #fff;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     transition: opacity .4s, transform .4s;
 }
 
@@ -3772,9 +3774,10 @@ textarea.form-input {
     position: relative;
     z-index: 2;
     flex: 1;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 60px 28px 30px;
+    padding: 44px 28px 24px;
 }
 
 .login-logo {
@@ -4064,6 +4067,280 @@ textarea.form-input {
     font-weight: 600;
 }
 
+/* ============================================================
+     品牌质感增强（高级感 · 去人机感细节）
+     ============================================================ */
+:root {
+    --brand: #1e73e8;
+    --brand-soft: rgba(30, 115, 232, .1);
+    --adm: #7c3aed;
+    --ink: #111827;
+    --hairline: rgba(17, 24, 39, .05);
+}
+
+::selection {
+    background: rgba(30, 115, 232, .2);
+}
+
+/* 桌面端背景氛围光（手机壳外的空间感） */
+@media (min-width: 431px) {
+    body {
+        background:
+            radial-gradient(900px 480px at 12% -6%, rgba(58, 160, 255, .22), transparent 60%),
+            radial-gradient(800px 460px at 108% 110%, rgba(139, 92, 246, .18), transparent 55%),
+            #e9eef5;
+    }
+
+    .phone {
+        box-shadow:
+            0 40px 90px -20px rgba(15, 23, 42, .45),
+            0 12px 28px rgba(15, 23, 42, .18),
+            inset 0 0 0 2px #333;
+    }
+}
+
+/* 品牌标题：流动渐变（慢速、克制，不晃眼） */
+.cool-title {
+    background-image: linear-gradient(120deg, #1e73e8 0%, #3ab0ff 28%, #8b5cf6 52%, #3ab0ff 76%, #1e73e8 100%);
+    background-size: 220% auto;
+    animation: titleFlow 7s linear infinite;
+}
+
+@keyframes titleFlow {
+    to {
+        background-position: 220% center;
+    }
+}
+
+/* 页面滚动更顺滑 */
+.page {
+    scroll-behavior: smooth;
+}
+
+/* 搜索栏聚焦态：品牌色描边 + 光晕 */
+.search-bar {
+    border: 1px solid transparent;
+    transition: box-shadow .25s ease, border-color .25s ease;
+}
+
+.search-bar:focus-within {
+    border-color: rgba(30, 115, 232, .35);
+    box-shadow: 0 6px 18px rgba(30, 115, 232, .14);
+}
+
+/* 商品卡：细腻层级 + 图片暗角，价格用等宽数字 */
+.product {
+    border: 1px solid var(--hairline);
+    box-shadow:
+        0 1px 2px rgba(16, 24, 40, .04),
+        0 8px 20px -8px rgba(16, 24, 40, .1);
+}
+
+.product:active {
+    transform: scale(.965) translateY(1px);
+}
+
+.product-img::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 64%, rgba(15, 23, 42, .16));
+    pointer-events: none;
+}
+
+.price {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .2px;
+}
+
+/* 收藏心形：点按弹跳 */
+.fav.active {
+    animation: favPop .38s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+@keyframes favPop {
+    0% {
+        transform: scale(.55);
+    }
+
+    60% {
+        transform: scale(1.28);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* 底部导航：激活项图标背板 + 平滑过渡 */
+.nav-item svg {
+    border-radius: 12px;
+    padding: 4px;
+    margin: -4px;
+    box-sizing: content-box;
+    transition: background .25s ease, color .2s ease;
+}
+
+.nav-item.active svg {
+    background: var(--brand-soft);
+}
+
+.phone.theme-admin .nav-item.active svg {
+    background: rgba(124, 58, 237, .1);
+}
+
+/* 中央发布按钮：缓慢旋转的呼吸光环 */
+.publish-btn {
+    position: relative;
+    z-index: 0;
+}
+
+.publish-btn::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, transparent 0%, rgba(58, 160, 255, .55) 30%, transparent 62%);
+    animation: haloSpin 3.6s linear infinite;
+    z-index: -1;
+    pointer-events: none;
+}
+
+@keyframes haloSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 登录主按钮：间隔性光泽扫过 */
+.login-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.login-btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .38), transparent);
+    transform: skewX(-22deg);
+    animation: btnShine 3.4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes btnShine {
+
+    0%,
+    55% {
+        left: -80%;
+    }
+
+    100% {
+        left: 130%;
+    }
+}
+
+/* 返回键：触控区加大 + 按压反馈 */
+.back-btn {
+    width: 34px;
+    height: 34px;
+    margin-left: -6px;
+    border-radius: 50%;
+    transition: background .2s ease, transform .15s ease;
+}
+
+.back-btn:active {
+    background: rgba(17, 24, 39, .07);
+    transform: scale(.86);
+}
+
+/* 卡片类统一发丝描边，减少"灰盒子"感 */
+.card,
+.form-block,
+.categories {
+    border: 1px solid var(--hairline);
+}
+
+/* 分类图标：轻按下沉 + 回弹 */
+.cat-icon {
+    box-shadow: 0 4px 10px -3px rgba(16, 24, 40, .22);
+}
+
+.cat-item:active .cat-icon {
+    transform: scale(.88) translateY(1px);
+}
+
+/* 分类 chip 激活态加投影 */
+.chip.active {
+    box-shadow: 0 4px 12px rgba(30, 115, 232, .28);
+}
+
+/* Banner：按压轻微缩放，增加"可点"暗示 */
+.banner-wrap {
+    transition: transform .18s ease;
+}
+
+.banner-wrap:active {
+    transform: scale(.985);
+}
+
+/* 审核员 Hero：叠加氛围光斑，营造纵深 */
+.adm-hero {
+    overflow: hidden;
+}
+
+.adm-hero::before {
+    content: "";
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, .26), transparent 65%);
+    top: -100px;
+    right: -56px;
+    pointer-events: none;
+}
+
+.adm-hero::after {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(192, 132, 252, .38), transparent 62%);
+    bottom: -96px;
+    left: -56px;
+    pointer-events: none;
+}
+
+.adm-hero>* {
+    position: relative;
+    z-index: 1;
+}
+
+/* 审核概览数字：渐变文字 */
+.adm-ov-num {
+    background: linear-gradient(135deg, #4f46e5, #9333ea);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-variant-numeric: tabular-nums;
+}
+
+/* 登录页背景网格缓慢漂移 */
+.login-bg::after {
+    animation: gridDrift 14s linear infinite;
+}
+
+@keyframes gridDrift {
+    to {
+        background-position: 30px 30px, 30px 30px;
+    }
+}
+
 @media (max-width: 430px) {
 
     html,
@@ -4143,4 +4420,207 @@ textarea.form-input {
     .page {
         padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
     }
+}
+
+/* ============================================================
+   好友 / 私信模块
+   ============================================================ */
+
+/* 消息 tab 红点 */
+.nav-item {
+    position: relative;
+}
+
+.nav-badge {
+    position: absolute;
+    top: -2px;
+    left: calc(50% + 8px);
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+    box-shadow: 0 0 0 2px #f4f5f7;
+    z-index: 2;
+}
+
+/* 消息页快捷入口行 */
+.msg-quick-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    background: #fff;
+    border-radius: 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.msg-quick-row:active {
+    background: #f3f4f6;
+}
+
+.mq-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mq-label {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.mq-arrow {
+    color: #c4c9d2;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.mq-badge {
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+}
+
+/* 添加好友搜索框 */
+.add-friend-search {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.add-friend-search input {
+    flex: 1;
+    min-width: 0;
+    height: 42px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 0 14px;
+    font-size: 14px;
+    outline: none;
+    background: #fff;
+}
+
+.add-friend-search input:focus {
+    border-color: #1e73e8;
+}
+
+.add-friend-search button {
+    height: 42px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #3aa0ff, #1e73e8);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.add-friend-tip {
+    font-size: 11px;
+    color: #9ca3af;
+    margin: 2px 2px 10px;
+}
+
+/* 用户 / 好友行（搜索结果 & 好友申请共用） */
+.friend-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #fff;
+    border-radius: 14px;
+    margin-bottom: 8px;
+}
+
+.friend-row-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.friend-row-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.friend-row-sub {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.friend-add-btn {
+    flex-shrink: 0;
+    height: 32px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #3aa0ff, #1e73e8);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.friend-add-btn:disabled {
+    background: #d1d5db;
+    cursor: default;
+}
+
+.friend-req-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.friend-req-actions button {
+    height: 32px;
+    padding: 0 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+}
+
+.fr-accept {
+    background: linear-gradient(135deg, #34d399, #10b981);
+    color: #fff;
+    border: none;
+}
+
+.fr-reject {
+    background: #fff;
+    border-color: #e5e7eb !important;
+    color: #6b7280;
 }

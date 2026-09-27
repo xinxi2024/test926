@@ -27,6 +27,7 @@ const pool = mysql.createPool({
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'scalaspark',
   database: process.env.DB_NAME || 'shangtao',
+  charset: 'utf8mb4',
   waitForConnections: true,
   connectionLimit: 10
 });
@@ -156,8 +157,8 @@ app.get('/api/products', async (req, res) => {
   res.json({ code: 0, data: rows });
 });
 
-// 商品详情
-app.get('/api/products/:id', async (req, res) => {
+// 商品详情（限制 id 为数字，避免与 /api/products/mine 冲突）
+app.get('/api/products/:id(\\d+)', async (req, res) => {
   const [rows] = await pool.query(
     `SELECT p.*, u.nickname AS seller_name, u.avatar AS seller_avatar
      FROM product p LEFT JOIN \`user\` u ON p.seller_id = u.id
@@ -169,18 +170,28 @@ app.get('/api/products/:id', async (req, res) => {
   res.json({ code: 0, data: rows[0] });
 });
 
-// 发布商品
+// 我的商品（卖家视角，含全部状态）
+app.get('/api/products/mine', auth, async (req, res) => {
+  const [rows] = await pool.query(
+    'SELECT * FROM product WHERE seller_id = ? ORDER BY created_at DESC',
+    [req.user.id]
+  );
+  res.json({ code: 0, data: rows });
+});
+
+// 发布商品（支持 multipart 图片上传，或 JSON 直接传 cover_image）
 app.post('/api/products/publish', auth, upload.array('images', 9), async (req, res) => {
-  const { title, price, category, description, location } = req.body;
+  const { title, price, category, description, location, cover_image } = req.body;
   if (!title || !price) return res.json({ code: 1, msg: '参数不完整' });
 
   const images = (req.files || []).map(f => '/uploads/' + f.filename);
+  const cover = images[0] || cover_image || '';
   const [r] = await pool.query(
     `INSERT INTO product
      (seller_id, category, title, description, price, cover_image, location, status)
      VALUES (?,?,?,?,?,?,?,0)`,
     [req.user.id, category || '其他', title, description || '', price,
-     images[0] || '', location || '奉贤校区']
+     cover, location || '奉贤校区']
   );
   // 保存多图
   for (let i = 1; i < images.length; i++) {
@@ -190,6 +201,27 @@ app.post('/api/products/publish', auth, upload.array('images', 9), async (req, r
     );
   }
   res.json({ code: 0, msg: '发布成功，等待审核', data: { id: r.insertId } });
+});
+
+// 商品上下架（卖家操作：已上架 <-> 已下架）
+app.post('/api/products/:id/status', auth, async (req, res) => {
+  const { action } = req.body; // 'online' | 'offline'
+  const [rows] = await pool.query('SELECT * FROM product WHERE id = ?', [req.params.id]);
+  if (rows.length === 0) return res.json({ code: 1, msg: '商品不存在' });
+  if (rows[0].seller_id !== req.user.id) return res.json({ code: 1, msg: '无权操作他人商品' });
+  const status = action === 'online' ? 1 : 4;
+  await pool.query('UPDATE product SET status = ? WHERE id = ?', [status, req.params.id]);
+  res.json({ code: 0, msg: action === 'online' ? '已重新上架' : '已下架' });
+});
+
+// 撤回/删除商品（卖家操作，级联删除多图记录）
+app.delete('/api/products/:id', auth, async (req, res) => {
+  const [rows] = await pool.query('SELECT * FROM product WHERE id = ?', [req.params.id]);
+  if (rows.length === 0) return res.json({ code: 1, msg: '商品不存在' });
+  if (rows[0].seller_id !== req.user.id) return res.json({ code: 1, msg: '无权操作他人商品' });
+  await pool.query('DELETE FROM product_image WHERE product_id = ?', [req.params.id]);
+  await pool.query('DELETE FROM product WHERE id = ?', [req.params.id]);
+  res.json({ code: 0, msg: '已撤回' });
 });
 
 // ============================================================
@@ -273,6 +305,95 @@ app.post('/api/orders/create', auth, async (req, res) => {
   res.json({ code: 0, msg: '下单成功', data: { orderNo } });
 });
 
+// 我的订单列表（买家视角）
+app.get('/api/orders/mine', auth, async (req, res) => {
+  const [rows] = await pool.query(
+    `SELECT o.*, p.title AS product_title, p.cover_image, u.nickname AS seller_name
+     FROM \`order\` o
+     LEFT JOIN product p ON o.product_id = p.id
+     LEFT JOIN \`user\` u ON o.seller_id = u.id
+     WHERE o.buyer_id = ? ORDER BY o.created_at DESC`,
+    [req.user.id]
+  );
+  res.json({ code: 0, data: rows });
+});
+
+// 订单状态流转：发货 / 确认收货 / 取消
+app.post('/api/orders/:id/ship', auth, async (req, res) => {
+  const [rows] = await pool.query('SELECT * FROM `order` WHERE id = ?', [req.params.id]);
+  if (rows.length === 0) return res.json({ code: 1, msg: '订单不存在' });
+  if (rows[0].seller_id !== req.user.id) return res.json({ code: 1, msg: '仅卖家可发货' });
+  await pool.query('UPDATE `order` SET status = 1 WHERE id = ?', [req.params.id]);
+  await pool.query(
+    'INSERT INTO notification (user_id, type, title, content, related_id) VALUES (?,?,?,?,?)',
+    [rows[0].buyer_id, 'order', '卖家已发货', '您的订单已发货，请留意查收', req.params.id]
+  );
+  res.json({ code: 0, msg: '已发货' });
+});
+
+app.post('/api/orders/:id/receive', auth, async (req, res) => {
+  const [rows] = await pool.query('SELECT * FROM `order` WHERE id = ?', [req.params.id]);
+  if (rows.length === 0) return res.json({ code: 1, msg: '订单不存在' });
+  if (rows[0].buyer_id !== req.user.id) return res.json({ code: 1, msg: '仅买家可确认收货' });
+  await pool.query('UPDATE `order` SET status = 2 WHERE id = ?', [req.params.id]);
+  res.json({ code: 0, msg: '已确认收货' });
+});
+
+app.post('/api/orders/:id/cancel', auth, async (req, res) => {
+  const [rows] = await pool.query('SELECT * FROM `order` WHERE id = ?', [req.params.id]);
+  if (rows.length === 0) return res.json({ code: 1, msg: '订单不存在' });
+  if (rows[0].buyer_id !== req.user.id) return res.json({ code: 1, msg: '仅买家可取消' });
+  await pool.query('UPDATE `order` SET status = 3 WHERE id = ?', [req.params.id]);
+  // 商品恢复为已上架
+  await pool.query('UPDATE product SET status = 1 WHERE id = ?', [rows[0].product_id]);
+  res.json({ code: 0, msg: '已取消' });
+});
+
+// ============================================================
+// 收藏模块
+// ============================================================
+app.post('/api/favorites/toggle', auth, async (req, res) => {
+  const { productId } = req.body;
+  const [rows] = await pool.query(
+    'SELECT * FROM favorite WHERE user_id = ? AND product_id = ?',
+    [req.user.id, productId]
+  );
+  if (rows.length > 0) {
+    await pool.query('DELETE FROM favorite WHERE user_id = ? AND product_id = ?', [req.user.id, productId]);
+    await pool.query('UPDATE product SET favorite_count = GREATEST(favorite_count - 1, 0) WHERE id = ?', [productId]);
+    return res.json({ code: 0, msg: '已取消收藏', data: { faved: false } });
+  }
+  await pool.query('INSERT INTO favorite (user_id, product_id) VALUES (?,?)', [req.user.id, productId]);
+  await pool.query('UPDATE product SET favorite_count = favorite_count + 1 WHERE id = ?', [productId]);
+  res.json({ code: 0, msg: '已收藏', data: { faved: true } });
+});
+
+app.get('/api/favorites', auth, async (req, res) => {
+  const [rows] = await pool.query(
+    `SELECT p.*, u.nickname AS seller_name FROM favorite f
+     JOIN product p ON f.product_id = p.id
+     LEFT JOIN \`user\` u ON p.seller_id = u.id
+     WHERE f.user_id = ? ORDER BY f.created_at DESC`,
+    [req.user.id]
+  );
+  res.json({ code: 0, data: rows });
+});
+
+// ============================================================
+// 用户资料模块
+// ============================================================
+app.post('/api/user/profile', auth, async (req, res) => {
+  const { nickname, avatar } = req.body;   // user 表无 bio 列，简介仅存前端
+  const updates = [];
+  const params = [];
+  if (nickname !== undefined) { updates.push('nickname = ?'); params.push(nickname); }
+  if (avatar !== undefined) { updates.push('avatar = ?'); params.push(avatar); }
+  if (!updates.length) return res.json({ code: 1, msg: '无更新内容' });
+  params.push(req.user.id);
+  await pool.query(`UPDATE \`user\` SET ${updates.join(',')} WHERE id = ?`, params);
+  res.json({ code: 0, msg: '资料已更新' });
+});
+
 // ============================================================
 // 通知模块
 // ============================================================
@@ -300,6 +421,166 @@ app.post('/api/notifications/read', auth, async (req, res) => {
 });
 
 // ============================================================
+// 好友与私信模块
+// ============================================================
+
+// 搜索用户（手机号精确匹配，或昵称模糊匹配；不含密码等敏感字段）
+app.get('/api/user/search', auth, async (req, res) => {
+  const kw = (req.query.keyword || '').trim();
+  if (!kw) return res.json({ code: 0, data: [] });
+  const [rows] = await pool.query(
+    `SELECT id, phone, nickname, avatar, college FROM \`user\`
+     WHERE id <> ? AND (phone LIKE ? OR nickname LIKE ?)
+     ORDER BY nickname LIMIT 20`,
+    [req.user.id, '%' + kw + '%', '%' + kw + '%']
+  );
+  res.json({ code: 0, data: rows });
+});
+
+// 发送好友申请
+app.post('/api/friends/request', auth, async (req, res) => {
+  const toUserId = Number(req.body.toUserId);
+  const message = (req.body.message || '').slice(0, 100);
+  if (!toUserId) return res.json({ code: 1, msg: '参数错误' });
+  if (toUserId === req.user.id) return res.json({ code: 1, msg: '不能添加自己为好友' });
+
+  const [tu] = await pool.query('SELECT id FROM `user` WHERE id = ?', [toUserId]);
+  if (tu.length === 0) return res.json({ code: 1, msg: '用户不存在' });
+
+  // 已是好友
+  const [ef] = await pool.query(
+    'SELECT id FROM friend WHERE user_id = ? AND friend_id = ?',
+    [req.user.id, toUserId]
+  );
+  if (ef.length > 0) return res.json({ code: 1, msg: '你们已经是好友了' });
+
+  // 我发出的待处理申请
+  const [ep] = await pool.query(
+    'SELECT id FROM friend_request WHERE from_user_id = ? AND to_user_id = ? AND status = 0',
+    [req.user.id, toUserId]
+  );
+  if (ep.length > 0) return res.json({ code: 1, msg: '已发送过申请，等待对方验证' });
+
+  // 对方向我发过申请：提示去处理
+  const [er] = await pool.query(
+    'SELECT id FROM friend_request WHERE from_user_id = ? AND to_user_id = ? AND status = 0',
+    [toUserId, req.user.id]
+  );
+  if (er.length > 0) return res.json({ code: 2, msg: '对方已向你发送好友申请，请在好友申请中通过', data: { requestId: er[0].id } });
+
+  await pool.query(
+    'INSERT INTO friend_request (from_user_id, to_user_id, message) VALUES (?,?,?)',
+    [req.user.id, toUserId, message]
+  );
+  res.json({ code: 0, msg: '好友申请已发送' });
+});
+
+// 收到的好友申请（待处理）
+app.get('/api/friends/requests/incoming', auth, async (req, res) => {
+  const [rows] = await pool.query(
+    `SELECT fr.id, fr.message, fr.created_at, fr.from_user_id,
+            u.nickname AS from_nickname, u.avatar AS from_avatar, u.phone AS from_phone
+     FROM friend_request fr
+     LEFT JOIN \`user\` u ON u.id = fr.from_user_id
+     WHERE fr.to_user_id = ? AND fr.status = 0
+     ORDER BY fr.created_at DESC`,
+    [req.user.id]
+  );
+  res.json({ code: 0, data: rows });
+});
+
+// 通过好友申请
+app.post('/api/friends/request/:id/accept', auth, async (req, res) => {
+  const rid = req.params.id;
+  const [rows] = await pool.query('SELECT * FROM friend_request WHERE id = ?', [rid]);
+  if (rows.length === 0) return res.json({ code: 1, msg: '申请不存在' });
+  const rq = rows[0];
+  if (rq.to_user_id !== req.user.id) return res.json({ code: 1, msg: '无权处理该申请' });
+  if (rq.status !== 0) return res.json({ code: 1, msg: '该申请已处理' });
+
+  await pool.query('UPDATE friend_request SET status = 1, handled_at = NOW() WHERE id = ?', [rid]);
+  // 双向好友关系（重复键忽略）
+  await pool.query(
+    'INSERT IGNORE INTO friend (user_id, friend_id) VALUES (?,?),(?,?)',
+    [rq.from_user_id, rq.to_user_id, rq.to_user_id, rq.from_user_id]
+  );
+  res.json({ code: 0, msg: '已添加好友，开始聊天吧' });
+});
+
+// 拒绝好友申请
+app.post('/api/friends/request/:id/reject', auth, async (req, res) => {
+  const rid = req.params.id;
+  const [rows] = await pool.query('SELECT * FROM friend_request WHERE id = ?', [rid]);
+  if (rows.length === 0) return res.json({ code: 1, msg: '申请不存在' });
+  if (rows[0].to_user_id !== req.user.id) return res.json({ code: 1, msg: '无权处理该申请' });
+  if (rows[0].status !== 0) return res.json({ code: 1, msg: '该申请已处理' });
+  await pool.query('UPDATE friend_request SET status = 2, handled_at = NOW() WHERE id = ?', [rid]);
+  res.json({ code: 0, msg: '已拒绝申请' });
+});
+
+// 好友列表（含最后一条消息、未读数）
+app.get('/api/friends', auth, async (req, res) => {
+  const [rows] = await pool.query(
+    `SELECT f.friend_id, u.nickname, u.avatar,
+       (SELECT pm.content FROM private_message pm
+        WHERE (pm.sender_id = f.user_id AND pm.receiver_id = f.friend_id)
+           OR (pm.sender_id = f.friend_id AND pm.receiver_id = f.user_id)
+        ORDER BY pm.id DESC LIMIT 1) AS last_content,
+       (SELECT pm.created_at FROM private_message pm
+        WHERE (pm.sender_id = f.user_id AND pm.receiver_id = f.friend_id)
+           OR (pm.sender_id = f.friend_id AND pm.receiver_id = f.user_id)
+        ORDER BY pm.id DESC LIMIT 1) AS last_time,
+       (SELECT COUNT(*) FROM private_message pm
+        WHERE pm.sender_id = f.friend_id AND pm.receiver_id = f.user_id AND pm.is_read = 0) AS unread
+     FROM friend f
+     LEFT JOIN \`user\` u ON u.id = f.friend_id
+     WHERE f.user_id = ?
+     ORDER BY (last_time IS NULL), last_time DESC`,
+    [req.user.id]
+  );
+  res.json({ code: 0, data: rows });
+});
+
+// 发送私信（必须是好友）
+app.post('/api/messages/send', auth, async (req, res) => {
+  const toUserId = Number(req.body.toUserId);
+  const content = (req.body.content || '').trim().slice(0, 1000);
+  if (!toUserId || !content) return res.json({ code: 1, msg: '内容不能为空' });
+
+  const [ef] = await pool.query(
+    'SELECT id FROM friend WHERE user_id = ? AND friend_id = ?',
+    [req.user.id, toUserId]
+  );
+  if (ef.length === 0) return res.json({ code: 1, msg: '只能给好友发消息' });
+
+  const [r] = await pool.query(
+    'INSERT INTO private_message (sender_id, receiver_id, content) VALUES (?,?,?)',
+    [req.user.id, toUserId, content]
+  );
+  res.json({ code: 0, msg: '发送成功', data: { id: r.insertId } });
+});
+
+// 拉取与某好友的消息（拉取时把对方发来的标记为已读）
+app.get('/api/messages/:otherId(\\d+)', auth, async (req, res) => {
+  const otherId = Number(req.params.otherId);
+  const afterId = req.query.afterId ? Number(req.query.afterId) : 0;
+  // 先标记对方发来的消息为已读，再返回，保证返回的状态是最新的
+  await pool.query(
+    'UPDATE private_message SET is_read = 1 WHERE sender_id = ? AND receiver_id = ? AND is_read = 0',
+    [otherId, req.user.id]
+  );
+  const [rows] = await pool.query(
+    `SELECT id, sender_id, receiver_id, content, is_read, created_at
+     FROM private_message
+     WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?))
+       AND id > ?
+     ORDER BY id ASC LIMIT 200`,
+    [req.user.id, otherId, otherId, req.user.id, afterId]
+  );
+  res.json({ code: 0, data: rows });
+});
+
+// ============================================================
 // 前端静态文件托管（使 http://localhost:3000/ 可直接访问 H5 应用）
 // 放在所有 API 路由之后，不影响 /api 接口
 // ============================================================
@@ -309,6 +590,14 @@ app.use(express.static(path.join(__dirname, '..')));
 // 健康检查 + 启动
 // ============================================================
 app.get('/api/health', (req, res) => res.json({ code: 0, msg: '上商淘服务运行中' }));
+
+// 兜底：单个请求的异步异常不应杀死整个进程（演示稳定性）
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandledRejection]', reason && reason.message ? reason.message : reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('[uncaughtException]', err.message);
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
