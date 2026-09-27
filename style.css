@@ -2523,6 +2523,7 @@ body {
     background: #f5f6f8;
     display: flex;
     flex-direction: column;
+    padding-top: 44px;  /* 为状态栏留出位置，避免返回键被 z-index:400 的状态栏盖住 */
     transform: translateX(100%);
     transition: transform .28s cubic-bezier(.32, .72, 0, 1);
 }
