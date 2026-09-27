@@ -1,3 +1,72 @@
+// ============================================================
+// API 客户端层：优先连接后端 MySQL，失败自动降级为本地模拟模式
+// ============================================================
+const API_BASE = location.origin;
+let apiToken = localStorage.getItem('st_token') || '';
+let apiOnline = false;   // 后端是否可用（启动时健康检查）
+let apiUser = null;      // 后端返回的用户 {id, phone, nickname, role}
+
+// 通用请求封装：自动带 Token
+async function apiFetch(path, opts) {
+    opts = opts || {};
+    if (!opts.headers) opts.headers = {};
+    if (apiToken) opts.headers['Authorization'] = 'Bearer ' + apiToken;
+    if (opts.body && !(opts.body instanceof FormData)) {
+        opts.headers['Content-Type'] = 'application/json';
+        if (typeof opts.body !== 'string') opts.body = JSON.stringify(opts.body);
+    }
+    const res = await fetch(API_BASE + path, opts);
+    return await res.json().catch(() => ({ code: -1 }));
+}
+
+// 启动时健康检查 + 从后端同步数据（覆盖本地 mock）
+async function initApiSync() {
+    try {
+        const h = await fetch(API_BASE + '/api/health');
+        const j = await h.json();
+        if (j.code === 0) {
+            apiOnline = true;
+            console.log('[API] 后端已连接（MySQL 模式）');
+            await syncProductsFromServer();
+        }
+    } catch (e) {
+        apiOnline = false;
+        console.log('[API] 后端未启动，使用本地模拟模式');
+    }
+}
+
+// 从后端拉取商品，映射为前端数据格式
+async function syncProductsFromServer() {
+    try {
+        const res = await apiFetch('/api/products?sort=new');
+        if (res.code === 0 && Array.isArray(res.data) && res.data.length) {
+            const localOnly = products.filter(p => p.localOnly);
+            products.length = 0;
+            res.data.forEach(db => {
+                products.push({
+                    id: db.id,
+                    cat: db.category || '其他',
+                    title: db.title,
+                    price: Number(db.price),
+                    img: db.cover_image || '',
+                    seller: db.seller_name || '卖家',
+                    location: db.location || '奉贤校区',
+                    views: db.view_count || 0,
+                    desc: db.description || '',
+                    status: db.status === 1 ? 'online' : db.status === 0 ? 'pending' : db.status === 2 ? 'rejected' : 'sold',
+                    isNew: false,
+                    submitTime: db.created_at ? new Date(db.created_at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) : '',
+                    rejectReason: db.reject_reason || '',
+                    _dbId: db.id
+                });
+            });
+            localOnly.forEach(p => products.push(p));
+            renderProducts();
+            console.log('[API] 商品已同步 ' + res.data.length + ' 件');
+        }
+    } catch (e) { console.log('[API] 商品同步失败，保留本地数据'); }
+}
+
 // ===== 数据 =====
 const products = [
     { id: 1, cat: '教材', title: '高等数学上下册+习题详解 同济第七版', price: 25, img: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=calculus%20textbook%20stack%20higher%20mathematics%20Chinese%20university%20clean%20desk&image_size=square', seller: '李学姐', location: '徐汇校区', views: 128, desc: '九成新，无笔记无划线，同济第七版上下册+习题详解，高数必备。' },
@@ -273,7 +342,7 @@ function closeOrder(e) {
     if (e && e.target !== e.currentTarget) return;
     document.getElementById('orderModal').classList.remove('show');
 }
-function confirmOrder() {
+async function confirmOrder() {
     const p = products.find(x => x.id === currentDetailId);
     if (!p) return;
     if (orders.some(o => o.productId === p.id && o.status !== 'canceled')) {
@@ -281,16 +350,27 @@ function confirmOrder() {
         return;
     }
 
-    // ===== 后端接口预留：POST /api/orders/create =====
-    // fetch('/api/orders/create', {
-    //   method:'POST',
-    //   headers:{'Content-Type':'application/json'},
-    //   body: JSON.stringify({ productId: p.id, price: p.price })
-    // }).then(r=>r.json()).then(data=>{ /* 下单成功 */ });
-
+    // ===== 调用后端下单接口（写入 MySQL + 商品置为已售 + 通知卖家） =====
+    if (apiOnline && p._dbId && apiUser) {
+        try {
+            const res = await apiFetch('/api/orders/create', {
+                method: 'POST',
+                body: { productId: p._dbId, tradeType: '自提', tradePlace: '奉贤校区一食堂门口' }
+            });
+            if (res.code === 0 && res.data) {
+                createLocalOrder(p, res.data.orderNo);
+                return;
+            }
+            showToast(res.msg || '下单失败');
+            return;
+        } catch (e) { console.log('[API] 下单请求异常，使用本地模式'); }
+    }
+    createLocalOrder(p);
+}
+function createLocalOrder(p, serverOrderNo) {
     // 生成订单
     orders.unshift({
-        orderNo: genOrderNo(),
+        orderNo: serverOrderNo || genOrderNo(),
         productId: p.id,
         title: p.title,
         img: p.img,
@@ -394,16 +474,17 @@ function selAdmTab(el, tab) {
     renderAdminList();
 }
 
-function approveProduct(id) {
+async function approveProduct(id) {
     const p = products.find(x => x.id === id);
     if (!p) return;
 
-    // ===== 后端接口预留：POST /api/product/approve =====
-    // fetch('/api/product/approve', {
-    //   method:'POST',
-    //   headers:{'Content-Type':'application/json'},
-    //   body: JSON.stringify({ productId: id, approved: true })
-    // }).then(r=>r.json());
+    // ===== 调用后端审核接口（写入 MySQL + 自动通知卖家） =====
+    if (apiOnline && p._dbId) {
+        try {
+            const res = await apiFetch('/api/products/' + p._dbId + '/audit', { method: 'POST', body: { approved: true } });
+            if (res.code !== 0) { showToast(res.msg || '审核失败'); return; }
+        } catch (e) { showToast('网络异常，请重试'); return; }
+    }
 
     p.status = 'online';
     p.isNew = true;
@@ -415,12 +496,22 @@ function approveProduct(id) {
     showToast('✅ 已通过审核并上架');
 }
 
-function rejectProduct(id) {
+async function rejectProduct(id) {
     const p = products.find(x => x.id === id);
     if (!p) return;
     // 演示：使用统一的驳回理由（后端会弹窗让审核员选择原因）
+    const reason = '商品图片不清晰，信息描述不完整，请修改后重新发布';
+
+    // ===== 调用后端驳回接口（写入 MySQL + 自动通知卖家） =====
+    if (apiOnline && p._dbId) {
+        try {
+            const res = await apiFetch('/api/products/' + p._dbId + '/audit', { method: 'POST', body: { approved: false, reason: reason } });
+            if (res.code !== 0) { showToast(res.msg || '驳回失败'); return; }
+        } catch (e) { showToast('网络异常，请重试'); return; }
+    }
+
     p.status = 'rejected';
-    p.rejectReason = '商品图片不清晰，信息描述不完整，请修改后重新发布';
+    p.rejectReason = reason;
     p.auditTime = nowStr();
     addNotification(`您的商品「${p.title}」被驳回：${p.rejectReason}`, 'reject');
     auditLog.unshift({ action: 'reject', title: p.title, time: nowStr() });
@@ -738,39 +829,72 @@ function updateNameCounter() {
     const v = document.getElementById('pTitle').value;
     document.getElementById('nameCounter').textContent = v.length + '/30';
 }
-function submitPublish() {
+async function submitPublish() {
     const title = document.getElementById('pTitle').value.trim();
     const price = document.getElementById('pPrice').value;
     if (uploadImgs.length === 0) return showToast('请至少上传1张图片');
     if (!title) return showToast('请填写商品名称');
     if (!price) return showToast('请填写商品价格');
 
-    // ===== 后端接口预留：POST /api/product/publish =====
-    // const formData = new FormData();
-    // formData.append('title', title);
-    // formData.append('price', price);
-    // uploadImgs.forEach(img => formData.append('images', img));
-    // fetch('/api/product/publish', { method:'POST', body: formData })
-    //   .then(r => r.json()).then(data => { /* 等待审核员审核 */ });
-
     const catEl = document.querySelector('.chip.active');
+    const catText = catEl ? catEl.textContent : '其他';
+    const descText = document.getElementById('pDesc').value || '卖家很懒，什么都没留下～';
+
+    // ===== 调用后端发布接口（写入 MySQL，等待审核） =====
+    if (apiOnline && apiUser) {
+        try {
+            const coverImg = uploadImgs[0] || '';
+            const res = await apiFetch('/api/products/publish', {
+                method: 'POST',
+                body: { title: title, price: price, category: catText, description: descText, location: '奉贤校区', cover_image: coverImg }
+            });
+            if (res.code === 0) {
+                products.push({
+                    id: (res.data && res.data.id) || Date.now(),
+                    cat: catText,
+                    title: title,
+                    price: Number(price),
+                    img: coverImg,
+                    seller: profile.name,
+                    location: '奉贤校区',
+                    views: 0,
+                    desc: descText,
+                    status: 'pending',
+                    isNew: false,
+                    submitTime: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+                    rejectReason: '',
+                    _dbId: res.data && res.data.id
+                });
+                showToast('发布成功，等待审核员审核…');
+                afterPublish();
+                return;
+            }
+            showToast(res.msg || '发布失败');
+            return;
+        } catch (e) { console.log('[API] 发布请求异常，使用本地模式'); }
+    }
+    // 本地模拟发布（后端不可用时兜底）
     const newProduct = {
         id: products.length + 1,
-        cat: catEl ? catEl.textContent : '其他',
+        cat: catText,
         title: title,
         price: Number(price),
         img: uploadImgs[0],
         seller: currentRole === 'admin' ? '审核员' : profile.name,
         location: '奉贤校区',
         views: 0,
-        desc: document.getElementById('pDesc').value || '卖家很懒，什么都没留下～',
+        desc: descText,
         status: 'pending',   // pending=待审核, online=已上架, rejected=已驳回, sold=已售出
         isNew: false,
         submitTime: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
-        rejectReason: ''
+        rejectReason: '',
+        localOnly: true
     };
     products.push(newProduct);
     showToast('发布成功，等待审核员审核…');
+    afterPublish();
+}
+function afterPublish() {
     setTimeout(() => {
         uploadImgs = [];
         renderUploadGrid();
@@ -888,20 +1012,41 @@ function doRegister() {
     showToast('🎉 注册成功，欢迎加入上商淘！');
 }
 
-function doLogin() {
+async function doLogin() {
     const phone = document.getElementById('loginPhone').value.trim();
     const code = document.getElementById('loginCode').value.trim();
     const agree = document.getElementById('agreeCheck').checked;
     if (!/^1\d{10}$/.test(phone)) return showToast('请输入正确的手机号');
     if (code.length < 4) return showToast('请输入验证码');
     if (!agree) return showToast('请先同意用户协议');
-    // 已注册用户登录时恢复其昵称
+
+    // ===== 调用后端登录接口（MySQL 真实账号） =====
+    if (apiOnline) {
+        try {
+            const res = await apiFetch('/api/auth/login', { method: 'POST', body: { phone: phone, code: code } });
+            if (res.code === 0 && res.data) {
+                apiToken = res.data.token;
+                apiUser = res.data.user;
+                localStorage.setItem('st_token', apiToken);
+                if (currentRole === 'user' && apiUser.nickname) profile.name = apiUser.nickname;
+                showToast('登录成功（' + (currentRole === 'admin' ? '审核员' : apiUser.nickname || '普通用户') + '）');
+                finishLogin();
+                return;
+            }
+            showToast(res.msg || '登录失败');
+            return;
+        } catch (e) { console.log('[API] 登录请求异常，使用本地模式'); }
+    }
+    // 本地模拟登录（后端不可用时兜底）
     const regUsers = getRegisteredUsers();
     if (currentRole === 'user' && regUsers[phone]) {
         profile.name = regUsers[phone].name;
     }
     const roleText = currentRole === 'admin' ? '审核员' : '普通用户';
     showToast('登录成功（' + roleText + '）');
+    finishLogin();
+}
+function finishLogin() {
     setTimeout(() => {
         document.getElementById('loginMask').classList.add('hide');
         pageHistory = [];
@@ -917,6 +1062,7 @@ function doLogin() {
     }, 600);
 }
 function logout() {
+    apiToken = ''; apiUser = null; localStorage.removeItem('st_token');
     document.getElementById('loginMask').classList.remove('hide');
     pageHistory = [];
     selectRole('user');
@@ -2116,6 +2262,7 @@ setInterval(() => {
 
 // ===== 初始化 =====
 restore();   // 恢复本地持久化数据（商品/订单/收藏等）
+initApiSync(); // 尝试连接后端 MySQL，同步商品数据
 // 首屏骨架屏（提升加载体验）
 (function () {
     let skel = '';

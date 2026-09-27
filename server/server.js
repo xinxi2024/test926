@@ -169,18 +169,19 @@ app.get('/api/products/:id', async (req, res) => {
   res.json({ code: 0, data: rows[0] });
 });
 
-// 发布商品
+// 发布商品（支持 multipart 图片上传，或 JSON 直接传 cover_image URL）
 app.post('/api/products/publish', auth, upload.array('images', 9), async (req, res) => {
-  const { title, price, category, description, location } = req.body;
+  const { title, price, category, description, location, cover_image } = req.body;
   if (!title || !price) return res.json({ code: 1, msg: '参数不完整' });
 
   const images = (req.files || []).map(f => '/uploads/' + f.filename);
+  const cover = images[0] || cover_image || '';
   const [r] = await pool.query(
     `INSERT INTO product
      (seller_id, category, title, description, price, cover_image, location, status)
      VALUES (?,?,?,?,?,?,?,0)`,
     [req.user.id, category || '其他', title, description || '', price,
-     images[0] || '', location || '奉贤校区']
+     cover, location || '奉贤校区']
   );
   // 保存多图
   for (let i = 1; i < images.length; i++) {
@@ -190,6 +191,36 @@ app.post('/api/products/publish', auth, upload.array('images', 9), async (req, r
     );
   }
   res.json({ code: 0, msg: '发布成功，等待审核', data: { id: r.insertId } });
+});
+
+// 我的发布列表（含全部状态）
+app.get('/api/products/mine', auth, async (req, res) => {
+  const [rows] = await pool.query(
+    'SELECT * FROM product WHERE seller_id = ? ORDER BY created_at DESC',
+    [req.user.id]
+  );
+  res.json({ code: 0, data: rows });
+});
+
+// 商品上下架（卖家本人）
+app.post('/api/products/:id/status', auth, async (req, res) => {
+  const { online } = req.body;
+  const [rows] = await pool.query('SELECT * FROM product WHERE id = ?', [req.params.id]);
+  if (rows.length === 0) return res.json({ code: 1, msg: '商品不存在' });
+  if (rows[0].seller_id !== req.user.id) return res.json({ code: 1, msg: '无权操作' });
+  // 上架=1（已上架），下架=4（已下架，仅前端语义，数据库用 2 之外的独立值会混乱，这里用 status=1/0 之外新增约定值 4）
+  await pool.query('UPDATE product SET status = ? WHERE id = ?', [online ? 1 : 4, req.params.id]);
+  res.json({ code: 0, msg: online ? '已上架' : '已下架' });
+});
+
+// 撤回发布（删除待审核商品）
+app.delete('/api/products/:id', auth, async (req, res) => {
+  const [rows] = await pool.query('SELECT * FROM product WHERE id = ?', [req.params.id]);
+  if (rows.length === 0) return res.json({ code: 1, msg: '商品不存在' });
+  if (rows[0].seller_id !== req.user.id) return res.json({ code: 1, msg: '无权操作' });
+  await pool.query('DELETE FROM product_image WHERE product_id = ?', [req.params.id]);
+  await pool.query('DELETE FROM product WHERE id = ?', [req.params.id]);
+  res.json({ code: 0, msg: '已撤回' });
 });
 
 // ============================================================
@@ -271,6 +302,96 @@ app.post('/api/orders/create', auth, async (req, res) => {
   );
 
   res.json({ code: 0, msg: '下单成功', data: { orderNo } });
+});
+
+// 我的订单列表（买家视角）
+app.get('/api/orders/mine', auth, async (req, res) => {
+  const [rows] = await pool.query(
+    `SELECT o.*, p.title AS product_title, p.cover_image, u.nickname AS seller_name
+     FROM \`order\` o
+     LEFT JOIN product p ON o.product_id = p.id
+     LEFT JOIN \`user\` u ON o.seller_id = u.id
+     WHERE o.buyer_id = ? ORDER BY o.created_at DESC`,
+    [req.user.id]
+  );
+  res.json({ code: 0, data: rows });
+});
+
+// 订单状态流转：发货 / 确认收货 / 取消
+app.post('/api/orders/:id/ship', auth, async (req, res) => {
+  const [rows] = await pool.query('SELECT * FROM `order` WHERE id = ?', [req.params.id]);
+  if (rows.length === 0) return res.json({ code: 1, msg: '订单不存在' });
+  if (rows[0].seller_id !== req.user.id) return res.json({ code: 1, msg: '仅卖家可发货' });
+  await pool.query('UPDATE `order` SET status = 1 WHERE id = ?', [req.params.id]);
+  await pool.query(
+    'INSERT INTO notification (user_id, type, title, content, related_id) VALUES (?,?,?,?,?)',
+    [rows[0].buyer_id, 'order', '卖家已发货', '您的订单已发货，请留意查收', req.params.id]
+  );
+  res.json({ code: 0, msg: '已发货' });
+});
+
+app.post('/api/orders/:id/receive', auth, async (req, res) => {
+  const [rows] = await pool.query('SELECT * FROM `order` WHERE id = ?', [req.params.id]);
+  if (rows.length === 0) return res.json({ code: 1, msg: '订单不存在' });
+  if (rows[0].buyer_id !== req.user.id) return res.json({ code: 1, msg: '仅买家可确认收货' });
+  await pool.query('UPDATE `order` SET status = 2 WHERE id = ?', [req.params.id]);
+  res.json({ code: 0, msg: '已确认收货' });
+});
+
+app.post('/api/orders/:id/cancel', auth, async (req, res) => {
+  const [rows] = await pool.query('SELECT * FROM `order` WHERE id = ?', [req.params.id]);
+  if (rows.length === 0) return res.json({ code: 1, msg: '订单不存在' });
+  if (rows[0].buyer_id !== req.user.id) return res.json({ code: 1, msg: '仅买家可取消' });
+  await pool.query('UPDATE `order` SET status = 3 WHERE id = ?', [req.params.id]);
+  // 商品恢复为已上架
+  await pool.query('UPDATE product SET status = 1 WHERE id = ?', [rows[0].product_id]);
+  res.json({ code: 0, msg: '已取消' });
+});
+
+// ============================================================
+// 收藏模块
+// ============================================================
+app.post('/api/favorites/toggle', auth, async (req, res) => {
+  const { productId } = req.body;
+  const [rows] = await pool.query(
+    'SELECT * FROM favorite WHERE user_id = ? AND product_id = ?',
+    [req.user.id, productId]
+  );
+  if (rows.length > 0) {
+    await pool.query('DELETE FROM favorite WHERE user_id = ? AND product_id = ?', [req.user.id, productId]);
+    await pool.query('UPDATE product SET favorite_count = GREATEST(favorite_count - 1, 0) WHERE id = ?', [productId]);
+    return res.json({ code: 0, msg: '已取消收藏', data: { faved: false } });
+  }
+  await pool.query('INSERT INTO favorite (user_id, product_id) VALUES (?,?)', [req.user.id, productId]);
+  await pool.query('UPDATE product SET favorite_count = favorite_count + 1 WHERE id = ?', [productId]);
+  res.json({ code: 0, msg: '已收藏', data: { faved: true } });
+});
+
+app.get('/api/favorites', auth, async (req, res) => {
+  const [rows] = await pool.query(
+    `SELECT p.*, u.nickname AS seller_name FROM favorite f
+     JOIN product p ON f.product_id = p.id
+     LEFT JOIN \`user\` u ON p.seller_id = u.id
+     WHERE f.user_id = ? ORDER BY f.created_at DESC`,
+    [req.user.id]
+  );
+  res.json({ code: 0, data: rows });
+});
+
+// ============================================================
+// 用户资料模块
+// ============================================================
+app.post('/api/user/profile', auth, async (req, res) => {
+  const { nickname, bio, avatar } = req.body;
+  const updates = [];
+  const params = [];
+  if (nickname !== undefined) { updates.push('nickname = ?'); params.push(nickname); }
+  if (bio !== undefined) { updates.push('bio = ?'); params.push(bio); }
+  if (avatar !== undefined) { updates.push('avatar = ?'); params.push(avatar); }
+  if (!updates.length) return res.json({ code: 1, msg: '无更新内容' });
+  params.push(req.user.id);
+  await pool.query(`UPDATE \`user\` SET ${updates.join(',')} WHERE id = ?`, params);
+  res.json({ code: 0, msg: '资料已更新' });
 });
 
 // ============================================================
